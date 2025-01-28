@@ -16,7 +16,7 @@ export default async function Home() {
 
         await signOut({ redirectTo: ROUTES.SIGN_IN });
       }}>
-        <Button type="submit">Sign Out</Button>
+       
       </form>
     </>
   );
