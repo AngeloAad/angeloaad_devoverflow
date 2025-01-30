@@ -11,7 +11,7 @@ export default async function Home() {
     <>
       <h1>Home</h1>
 
-      <form className="px-10 pt-[100px]" action={async () => {
+      <form className="px-10 pt-[100 px]" action={async () => {
         "use server";
 
         await signOut({ redirectTo: ROUTES.SIGN_IN });

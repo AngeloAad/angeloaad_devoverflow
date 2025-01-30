@@ -20,7 +20,7 @@ const config: Config = {
   				'200': '#0F1117',
   				'300': '#151821',
   				'400': '#212734',
-  				'500': '#101012'
+  				'500': '#3F4354'
   			},
   			light: {
   				'400': '#858EAD',
@@ -59,7 +59,7 @@ const config: Config = {
   			'space-grotesk': [
   				'var(--font-space-grotesk)'
   			]
-  		}
+  		} 
   	}
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
