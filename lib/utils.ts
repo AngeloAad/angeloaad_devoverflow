@@ -13,3 +13,21 @@ export const getDeviconClassName = (techName: string) => {
     ? `${techMap[normalizedTechName]} colored`
     : "devicon-devicon-plain";
 };
+
+export const getTimeStamp = (date: Date): string => {
+  const now = new Date();
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000); // Difference in seconds
+
+  if(diff < 2 ) return `just now`;
+  if (diff < 60) return `${diff} secs ago`;
+  const diffMinutes = Math.floor(diff / 60);
+  if (diffMinutes < 60) return `${diffMinutes} mins ago`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours} hours ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 30) return `${diffDays} days ago`;
+  const diffMonths = Math.floor(diffDays / 30);
+  if (diffMonths < 12) return `${diffMonths} months ago`;
+  const diffYears = Math.floor(diffDays / 365);
+  return `${diffYears} years ago`;
+};
