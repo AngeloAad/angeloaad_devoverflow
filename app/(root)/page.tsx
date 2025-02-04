@@ -5,6 +5,7 @@ import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
 import QuestionCard from "@/components/cards/QuestionCard";
+import AskAQuestion from "./ask-a-question/page";
 
 const questions = [
   {
@@ -73,7 +74,9 @@ const Home = async ({ searchParams }: SearchParams) => {
           className="primary-gradient min-h-[46px] px-4 py-3 !text-light-900"
           asChild
         >
-          <Link href={ROUTES.ASK_QUESTION}>Ask a Question</Link>
+          <Link href={ROUTES.ASK_A_QUESTION}>
+          <AskAQuestion />
+          </Link>
         </Button>
       </section>
       <section className="mt-11">
