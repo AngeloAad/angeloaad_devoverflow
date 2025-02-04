@@ -96,25 +96,34 @@ const Editor = ({ value, editorRef, fieldChange, ...props }: Props) => {
                 },
                 {
                   fallback: () => (
-                    <>
-                      <UndoRedo />
-                      <Separator />
+                    <div className="flex flex-wrap">
+                      <div className="flex items-center gap-1">
+                        <UndoRedo />
+                        <Separator />
+                      </div>
 
-                      <BoldItalicUnderlineToggles />
-                      <Separator />
+                      <div className="flex items-center gap-1">
+                        <BoldItalicUnderlineToggles />
+                        <Separator />
+                      </div>
 
-                      <ListsToggle />
-                      <Separator />
+                      <div className="flex items-center gap-1">
+                        <ListsToggle />
+                        <Separator />
+                      </div>
 
-                      <CreateLink />
-                      <InsertImage />
-                      <Separator />
+                      <div className="flex items-center gap-1">
+                        <CreateLink />
+                        <InsertImage />
+                        <Separator />
+                      </div>
 
-                      <InsertTable />
-                      <InsertThematicBreak />
-
-                      <InsertCodeBlock />
-                    </>
+                      <div className="flex items-center gap-1">
+                        <InsertTable />
+                        <InsertThematicBreak />
+                        <InsertCodeBlock />
+                      </div>
+                    </div>
                   ),
                 },
               ]}
