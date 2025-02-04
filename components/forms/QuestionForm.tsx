@@ -2,7 +2,7 @@
 
 import { AskQuestionSchema } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -15,8 +15,18 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import dynamic from "next/dynamic";
+import { MDXEditorMethods } from "@mdxeditor/editor";
+
+const Editor = dynamic(() => import("../editor"), {
+  // Make sure we turn SSR off
+  ssr: false
+})
+
 
 const QuestionForm = () => {
+  const editorRef = useRef<MDXEditorMethods>(null);
+
   const form = useForm({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
@@ -45,7 +55,7 @@ const QuestionForm = () => {
               </FormLabel>
               <FormControl>
                 <Input
-                  className="paragraph-regular background-light800_dark300 light-border-2 
+                  className="paragraph-regular background-light800_dark200 light-border-2 
                   text-dark300_light700 no-focus min-h-[56px] border"
                   {...field}
                 />
@@ -69,9 +79,14 @@ const QuestionForm = () => {
                 <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl>
-                Editor
+                <Editor
+                  value={field.value}
+                  onChange={field.onChange}
+                  editorRef={editorRef}
+                />
               </FormControl>
-              <FormDescription className="body-regular dark:text-light-500 text-light-500 mt-2.5">
+              <FormDescription className="body-regular dark:text-light-500 
+              text-light-500 mt-2.5">
                 Introduce the problem and expand on what you put in the title.
                 Minimum 20 characters.
               </FormDescription>
@@ -90,14 +105,14 @@ const QuestionForm = () => {
               </FormLabel>
               <FormControl>
                 <Input
-                  className="paragraph-regular background-light800_dark300 light-border-2 
+                  className="paragraph-regular background-light800_dark200 light-border-2 
                   text-dark300_light700 no-focus min-h-[56px] border"
                   {...field}
                 />
               </FormControl>
               <FormDescription className="body-regular dark:text-light-500 text-light-500 mt-2.5">
-                Add up to 5 tags to describe what your question is about. Start
-                typing to see suggestions.
+                Add up to 3 tags to describe what your question is about. Press entet to add
+                a tag.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -105,8 +120,10 @@ const QuestionForm = () => {
         />
 
         <div className="flex justify-end mt-16">
-          <Button type="submit"
-          className="primary-gradient w-fit !text-light-900">
+          <Button
+            type="submit"
+            className="primary-gradient w-fit !text-light-900"
+          >
             Ask A Question
           </Button>
         </div>

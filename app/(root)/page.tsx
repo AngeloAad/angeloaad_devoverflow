@@ -1,11 +1,10 @@
 import Link from "next/link";
 
+import QuestionCard from "@/components/cards/QuestionCard";
 import HomeFilter from "@/components/filters/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
-import QuestionCard from "@/components/cards/QuestionCard";
-import AskAQuestion from "./ask-a-question/page";
 
 const questions = [
   {
@@ -20,7 +19,7 @@ const questions = [
       _id: "1",
       name: "John Doe",
       image:
-        "https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg",
+        "https://static.vecteezy.com/system/resources/previews/002/002/403/non_2x/man-with-beard-avatar-character-isolated-icon-free-vector.jpg",
     },
     upvotes: 10,
     answers: 5,
@@ -39,12 +38,12 @@ const questions = [
       _id: "1",
       name: "John Doe",
       image:
-        "https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg",
+        "https://static.vecteezy.com/system/resources/previews/002/002/403/non_2x/man-with-beard-avatar-character-isolated-icon-free-vector.jpg",
     },
     upvotes: 10,
     answers: 5,
     views: 100,
-    createdAt: new Date(),
+    createdAt: new Date("2021-09-01"),
   },
 ];
 
@@ -74,9 +73,7 @@ const Home = async ({ searchParams }: SearchParams) => {
           className="primary-gradient min-h-[46px] px-4 py-3 !text-light-900"
           asChild
         >
-          <Link href={ROUTES.ASK_A_QUESTION}>
-          <AskAQuestion />
-          </Link>
+          <Link href={ROUTES.ASK_A_QUESTION}>Ask a Question</Link>
         </Button>
       </section>
       <section className="mt-11">
