@@ -1,15 +1,15 @@
-// This is a template model for creating a new model
-import { model, models, Schema, Types } from "mongoose";
+import { model, models, Schema, Types, Document } from "mongoose";
 
 // 1. Create an interface representing a document in MongoDB.
 export interface IInteraction {
   user: Types.ObjectId;
   action: string;
   actionId: Types.ObjectId;
-  actionType: "question" | "answer";
+  actionType: string;
 }
 
 // 2. Create a Schema corresponding to the document interface.
+export interface IInteractionDoc extends IInteraction, Document {}
 const InteractionSchema = new Schema<IInteraction>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },

@@ -1,5 +1,4 @@
-// This is a template Answer for creating a new Answer
-import { model, models, Schema, Types } from "mongoose";
+import { model, models, Schema, Types, Document } from "mongoose";
 
 // 1. Create an interface representing a document in MongoDB.
 export interface IAnswer {
@@ -11,6 +10,7 @@ export interface IAnswer {
 }
 
 // 2. Create a Schema corresponding to the document interface.
+export interface IAnswerDoc extends IAnswer, Document {}
 const AnswerSchema = new Schema<IAnswer>(
   {
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },

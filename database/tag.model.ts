@@ -1,5 +1,4 @@
-// This is a template model for creating a new model
-import { model, models, Schema, Types } from "mongoose";
+import { model, models, Schema, Document } from "mongoose";
 
 // 1. Create an interface representing a document in MongoDB.
 export interface ITag {
@@ -8,6 +7,7 @@ export interface ITag {
 }
 
 // 2. Create a Schema corresponding to the document interface.
+export interface ITagDoc extends ITag, Document {}
 const TagSchema = new Schema<ITag>(
   {
     name: { type: String, required: true, unique: true },

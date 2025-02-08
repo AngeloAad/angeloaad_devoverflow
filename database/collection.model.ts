@@ -1,5 +1,4 @@
-// This is a template model for creating a new model
-import { model, models, Schema, Types } from "mongoose";
+import { model, models, Schema, Types, Document } from "mongoose";
 
 // 1. Create an interface representing a document in MongoDB.
 export interface ICollection {
@@ -8,6 +7,7 @@ export interface ICollection {
 }
 
 // 2. Create a Schema corresponding to the document interface.
+export interface ICollectionDoc extends ICollection, Document {}
 const CollectionSchema = new Schema<ICollection>(
   {
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },

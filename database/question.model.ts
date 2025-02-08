@@ -1,4 +1,4 @@
-import { model, models, Schema, Types } from "mongoose";
+import { model, models, Schema, Types, Document } from "mongoose";
 
 // 1. Create an interface representing a document in MongoDB.
 export interface IQuestion {
@@ -13,6 +13,7 @@ export interface IQuestion {
 }
 
 // 2. Create a Schema corresponding to the document interface.
+export interface IQuestionDoc extends IQuestion, Document {}
 const QuestionSchema = new Schema<IQuestion>(
   {
     title: { type: String, required: true },

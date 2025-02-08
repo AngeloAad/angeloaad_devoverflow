@@ -1,4 +1,4 @@
-import { model, models, Schema, Types } from "mongoose";
+import { model, models, Schema, Types, Document } from "mongoose";
 
 // 1. Create an interface representing a document in MongoDB.
 export interface IAccount {
@@ -11,7 +11,8 @@ export interface IAccount {
 }
 
 // 2. Create a Schema corresponding to the document interface.
-export const AccountSchema = new Schema<IAccount>(
+export interface IAccountDoc extends IAccount, Document {}
+const AccountSchema = new Schema<IAccount>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     name: { type: String, required: true },
