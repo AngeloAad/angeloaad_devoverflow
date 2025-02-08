@@ -5,7 +5,7 @@ import { model, models, Schema, Types } from "mongoose";
 export interface IModel {}
 
 // 2. Create a Schema corresponding to the document interface.
-const ModelSchema = new Schema<IModel>({});
+const ModelSchema = new Schema<IModel>({}, {timestamps: true});
 
 // 3. Create a Model.
 const Model = models?.Model || model<IModel>("Model", ModelSchema);
