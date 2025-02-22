@@ -1,13 +1,56 @@
 import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 
 import { IAccountDoc } from "./database/account.model";
+import { IUserDoc } from "./database/user.model";
 import { api } from "./lib/api";
+import { SignInSchema } from "./lib/validations";
+import bcrypt from "bcryptjs";
 
 // Initialize NextAuth with GitHub and Google as OAuth providers and custom callbacks.
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [GitHub, Google],
+  providers: [
+    GitHub,
+    Google,
+    Credentials({
+      async authorize(credentials) {
+        const validatedFields = SignInSchema.safeParse(credentials);
+
+        if (validatedFields.success) {
+          const { email, password } = validatedFields.data;
+
+          const { data: existingAccount } = (await api.accounts.getByProvider(
+            email
+          )) as ActionResponse<IAccountDoc>;
+
+          if (!existingAccount) return null;
+
+          const { data: exisitingUser } = (await api.users.getById(
+            existingAccount.userId.toString()
+          )) as ActionResponse<IUserDoc>;
+
+          if (!exisitingUser) return null;
+
+          const isValidPassword = await bcrypt.compare(
+            password,
+            existingAccount.password!
+          );
+
+          if (isValidPassword) {
+            return {
+              id: exisitingUser.id,
+              name: exisitingUser.name,
+              email: exisitingUser.email,
+              image: exisitingUser.image,
+            };
+          }
+        }
+        return null;
+      },
+    }),
+  ],
 
   callbacks: {
     // Enrich the session with the user's unique ID from the JWT token.
