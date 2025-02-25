@@ -3,7 +3,7 @@ import { model, models, Schema, Types, Document } from "mongoose";
 // 1. Create an interface representing a document in MongoDB.
 export interface ITagQuestion {
   question: Types.ObjectId;
-  tagId: Types.ObjectId;
+  tag: Types.ObjectId;
 }
 
 // 2. Create a Schema corresponding to the document interface.
@@ -11,7 +11,7 @@ export interface ITagQuestionDoc extends ITagQuestion, Document {}
 const TagQuestionSchema = new Schema<ITagQuestion>(
   {
     question: { type: Schema.Types.ObjectId, ref: "Question", required: true },
-    tagId: { type: Schema.Types.ObjectId, ref: "Tag", required: true },
+    tag: { type: Schema.Types.ObjectId, ref: "Tag", required: true },
   },
   { timestamps: true }
 );
