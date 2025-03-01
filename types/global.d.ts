@@ -42,3 +42,11 @@ interface RouteParams {
   params: Promise<Record<string, string>>; // example: /questions/:id
   searchParams: Promise<Record<string, string>>; // example: /questions?tag=javascript
 }
+
+interface PaginatedSearchParams {
+  page?: number;
+  pageSize?: number;
+  query?: string;
+  filter?: string;
+  sort?: string;
+}
