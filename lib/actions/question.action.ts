@@ -60,7 +60,7 @@ export async function createQuestion(
         { name: { $regex: new RegExp(`^${tag}$`, "i") } },
         {
           $setOnInsert: { name: tag }, // Only set name if creating new tag
-          $inc: { question: 1 }, // Increment question count either way
+          $inc: { questions: 1 }, // Increment question count either way
         },
         {
           upsert: true, // Create tag if it doesn't exist
@@ -173,7 +173,7 @@ export async function editQuestion(
           { name: { $regex: `^${tag}$`, $options: "i" } },
           {
             $setOnInsert: { name: tag },
-            $inc: { question: 1 },
+            $inc: { questions: 1 },
           },
           { upsert: true, new: true, session }
         );
@@ -199,7 +199,7 @@ export async function editQuestion(
       // Decrement question count for removed tags
       await Tag.updateMany(
         { _id: { $in: tagIdsToRemove } },
-        { $inc: { question: -1 } },
+        { $inc: { questions: -1 } },
         { session }
       );
 
