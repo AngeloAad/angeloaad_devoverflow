@@ -27,7 +27,9 @@ export const getTags = async (
   const skip = (Number(page) - 1) * pageSize;
   const limit = Number(pageSize);
 
-  const filterQuery: FilterQuery<typeof Tag> = {};
+  const filterQuery: FilterQuery<typeof Tag> = {
+    questions: { $gte: 1 },
+  };
 
   if (query) {
     filterQuery.$or = [{ name: { $regex: query, $options: "i" } }];
