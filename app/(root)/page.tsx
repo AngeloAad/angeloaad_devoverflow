@@ -59,26 +59,6 @@ const Home = async ({ searchParams }: SearchParams) => {
           ))
         )}
       />
-
-      {/* {success ? (
-        <div className="mt-10 flex w-full flex-col gap-6">
-          {questions && questions.length > 0 ? (
-            questions.map((question) => (
-              <QuestionCard key={question._id} question={question} />
-            ))
-          ) : (
-            <div className="mt-10 flex w-full items-center justify-center">
-              <p className="text-dark400_light700">No questions found</p>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="mt-10 flex w-full items-center justify-center">
-          <p className="text-dark400_light700">
-            {error?.message || "Failed to fetch questions"}
-          </p>
-        </div>
-      )} */}
     </>
   );
 };
