@@ -3,7 +3,7 @@
 
 import User from "@/database/user.model"; // Import the User model for database operations
 import handleError from "@/lib/handlers/error"; // Import error handling function
-import { NotFoundError } from "@/lib/http-errors"; // Import custom error for not found
+import { NotFoundError, ValidationError } from "@/lib/http-errors"; // Import custom error for not found
 import dbConnect from "@/lib/mongoose"; // Import database connection function
 import { UserSchema } from "@/lib/validations"; // Import user validation schema
 import { NextResponse } from "next/server"; // Import Next.js response handling
@@ -63,7 +63,10 @@ export async function PUT(
     await dbConnect(); // Connect to the database
 
     const body = await request.json(); // Get the request body as JSON
-    const validatedData = UserSchema.partial().parse(body); // Validate the incoming data
+    const validatedData = UserSchema.partial().safeParse(body); // Validate the incoming data
+
+    if (!validatedData.success)
+      throw new ValidationError(validatedData.error.flatten().fieldErrors);
 
     const updatedUser = await User.findByIdAndUpdate(id, validatedData, {
       new: true, // Return the updated user
