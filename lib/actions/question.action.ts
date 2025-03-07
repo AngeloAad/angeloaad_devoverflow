@@ -261,7 +261,9 @@ export async function getQuestion(
 
   try {
     // Fetch question with populated tags
-    const question = await Question.findById(questionId).populate("tags");
+    const question = await Question.findById(questionId)
+      .populate("tags")
+      .populate("author", "_id name image");
 
     // Check if question exists
     if (!question) {
