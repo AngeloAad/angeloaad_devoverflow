@@ -79,7 +79,7 @@ const AnswerForm = () => {
             name="content"
             render={({ field }) => (
               <FormItem className="flex w-full flex-col gap-3">
-                <FormControl className="mt-3.5">
+                <FormControl className="background-light800_dark200 light-border-2 markdown-editor dark-editor w-full border-2 py-[0.5px]">
                   <Editor
                     value={field.value}
                     editorRef={editorRef}
@@ -92,7 +92,10 @@ const AnswerForm = () => {
           />
 
           <div className="flex justify-end">
-            <Button type="submit" className="primary-gradient w-fit">
+            <Button
+              type="submit"
+              className="primary-gradient w-fit !text-light-900"
+            >
               {isSubmitting ? (
                 <>
                   <ReloadIcon className="mr-2 size-4 animate-spin" />
