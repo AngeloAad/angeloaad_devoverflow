@@ -34,6 +34,7 @@ const Metric = ({
         height={16}
         alt={alt}
         className={`rounded-full object-contain ${imgStyles}`}
+        style={{ fill: "blue" }}
       />
 
       <p className={`${textStyles} flex-center gap-1`}>

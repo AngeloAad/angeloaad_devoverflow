@@ -155,3 +155,8 @@ export const AnswerSchema = z.object({
     .string()
     .min(50, { message: "Answer must be at least 50 characters long." }),
 });
+
+export const CreateAnswerSchema = AnswerSchema.extend({
+  questionId: z.string().min(1, { message: "Question ID is required." }),
+});
+
