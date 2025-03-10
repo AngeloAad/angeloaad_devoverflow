@@ -48,3 +48,8 @@ export const EMPTY_COLLECTIONS = {
     href: ROUTES.COLLECTION,
   },
 };
+
+export const EMPTY_ANSWERS = {
+  title: "No Answers Found",
+  message: "Be the first to answer this question.",
+};
