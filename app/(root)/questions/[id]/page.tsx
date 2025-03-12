@@ -26,7 +26,11 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     return redirect("/404");
   }
 
-  const { success: areAnswersLoaded, data: answersResult, error: answersError } = await getAnswers({
+  const {
+    success: areAnswersLoaded,
+    data: answersResult,
+    error: answersError,
+  } = await getAnswers({
     questionId: id,
     page: 1,
     pageSize: 10,
@@ -113,7 +117,11 @@ const QuestionDetails = async ({ params }: RouteParams) => {
       </section>
 
       <section className="my-10">
-        <AnswerForm questionId={question._id} />
+        <AnswerForm
+          questionId={question._id}
+          questionTitle={question.title}
+          questionContent={question.content}
+        />
       </section>
     </>
   );
