@@ -12,6 +12,7 @@ import { after } from "next/server";
 import AnswerForm from "@/components/forms/AnswerForm";
 import { getAnswers } from "@/lib/actions/answer.action";
 import AllAnswers from "@/components/answers/AllAnswers";
+import Votes from "@/components/votes/Votes";
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
   const { success, data: question } = await getQuestion({
@@ -37,7 +38,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     filter: "newest",
   });
 
-  const { author, createdAt, title, content, tags, answers, views } = question;
+  const { author, createdAt, title, content, tags, answers, views, upvotes, downvotes } = question;
 
   return (
     <>
@@ -59,7 +60,12 @@ const QuestionDetails = async ({ params }: RouteParams) => {
           </div>
 
           <div className="flex items-center justify-end">
-            <p>Votes</p>
+            <Votes
+              upvotes={upvotes}
+              hasUpvoted={true}
+              downvotes={downvotes}
+              hasDownvoted={false}
+            />
           </div>
         </div>
 
