@@ -1,3 +1,4 @@
+import { userAgentFromString } from "next/server";
 import { z } from "zod";
 
 export const SignInSchema = z.object({
@@ -172,4 +173,5 @@ export const AIAnswerSchema = z.object({
   content: z
     .string()
     .min(50, { message: "Answer has to have more than 50 characters." }),
+  userAnswer: z.string().optional(),
 });
