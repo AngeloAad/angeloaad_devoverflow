@@ -53,3 +53,9 @@ interface UpdateVoteCountParams extends CreateVoteParams {
   change: 1 | -1;
 }
 
+type GetVoteParams = Pick<CreateVoteParams, "actionId" | "actionType">;
+
+interface GetVoteResponse {
+  upvoted: boolean;
+  downvoted: boolean;
+}
