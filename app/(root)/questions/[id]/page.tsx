@@ -7,12 +7,15 @@ import { getQuestion, incrementViews } from "@/lib/actions/question.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 import { after } from "next/server";
 import AnswerForm from "@/components/forms/AnswerForm";
 import { getAnswers } from "@/lib/actions/answer.action";
 import AllAnswers from "@/components/answers/AllAnswers";
 import Votes from "@/components/votes/Votes";
+import VotesSkeleton from "@/components/votes/VotesSkeleton";
+import { getVote } from "@/lib/actions/vote.action";
+
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
   const { success, data: question } = await getQuestion({
@@ -38,7 +41,22 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     filter: "newest",
   });
 
-  const { author, createdAt, title, content, tags, answers, views, upvotes, downvotes } = question;
+  const getVotePromise = getVote({
+    actionId: question._id,
+    actionType: "question",
+  });
+
+  const {
+    author,
+    createdAt,
+    title,
+    content,
+    tags,
+    answers,
+    views,
+    upvotes,
+    downvotes,
+  } = question;
 
   return (
     <>
@@ -60,12 +78,15 @@ const QuestionDetails = async ({ params }: RouteParams) => {
           </div>
 
           <div className="flex items-center justify-end">
-            <Votes
-              upvotes={upvotes}
-              hasUpvoted={true}
-              downvotes={downvotes}
-              hasDownvoted={false}
-            />
+            <Suspense fallback={<VotesSkeleton />}>
+              <Votes
+                upvotes={upvotes}
+                downvotes={downvotes}
+                actionType="question"
+                actionId={question._id}
+                getVotePromise={getVotePromise}
+              />
+            </Suspense>
           </div>
         </div>
 
