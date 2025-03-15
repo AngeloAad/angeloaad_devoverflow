@@ -1,11 +1,12 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useOptimistic, startTransition } from "react";
 import Image from "next/image";
 import { formatNumber } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { toast } from "@/hooks/use-toast";
 import { createVote } from "@/lib/actions/vote.action";
+
 interface VotesProps {
   upvotes: number;
   downvotes: number;
@@ -14,9 +15,17 @@ interface VotesProps {
   getVotePromise: Promise<ActionResponse<GetVoteResponse>>;
 }
 
+// Simplified vote state
+interface VoteState {
+  upvotes: number;
+  downvotes: number;
+  upvoted: boolean;
+  downvoted: boolean;
+}
+
 const Votes = ({
-  upvotes,
-  downvotes,
+  upvotes: initialUpvotes,
+  downvotes: initialDownvotes,
   actionType,
   actionId,
   getVotePromise,
@@ -25,8 +34,62 @@ const Votes = ({
   const userId = session.data?.user?.id;
   const [isLoading, setIsLoading] = useState(false);
 
+  // Get initial data from the server
   const { success, data } = use(getVotePromise);
-  const { upvoted, downvoted } = data || {};
+  const { upvoted = false, downvoted = false } = data || {};
+
+  // Create a single source of truth for vote state
+  const [voteState, setVoteState] = useState<VoteState>({
+    upvotes: initialUpvotes,
+    downvotes: initialDownvotes,
+    upvoted,
+    downvoted,
+  });
+
+  // Optimistic update function to handle vote changes
+  const [optimisticVoteState, addOptimisticVote] = useOptimistic(
+    voteState,
+    (state, voteType: "upvote" | "downvote") => {
+      // Create a new state object
+      const newState = { ...state };
+
+      if (voteType === "upvote") {
+        if (state.upvoted) {
+          // Remove upvote
+          newState.upvotes -= 1;
+          newState.upvoted = false;
+        } else {
+          // Add upvote
+          newState.upvotes += 1;
+          newState.upvoted = true;
+
+          // Remove downvote if exists
+          if (state.downvoted) {
+            newState.downvotes -= 1;
+            newState.downvoted = false;
+          }
+        }
+      } else {
+        if (state.downvoted) {
+          // Remove downvote
+          newState.downvotes -= 1;
+          newState.downvoted = false;
+        } else {
+          // Add downvote
+          newState.downvotes += 1;
+          newState.downvoted = true;
+
+          // Remove upvote if exists
+          if (state.upvoted) {
+            newState.upvotes -= 1;
+            newState.upvoted = false;
+          }
+        }
+      }
+
+      return newState;
+    }
+  );
 
   const handleVote = async (voteType: "upvote" | "downvote") => {
     if (!userId) {
@@ -38,6 +101,11 @@ const Votes = ({
     }
 
     setIsLoading(true);
+
+    // Apply optimistic update
+    startTransition(() => {
+      addOptimisticVote(voteType);
+    });
 
     try {
       const result = await createVote({
@@ -57,13 +125,48 @@ const Votes = ({
         return;
       }
 
-      const isNowUpvoted = voteType === "upvote" ? !upvoted : upvoted;
-      const isNowDownvoted = voteType === "downvote" ? !downvoted : downvoted;
+      // Update the actual state to match our optimistic state
+      setVoteState((current) => {
+        const newState = { ...current };
 
-      const successMessage =
-        voteType === "upvote"
-          ? `Upvote ${isNowUpvoted ? "added" : "removed"} successfully`
-          : `Downvote ${isNowDownvoted ? "added" : "removed"} successfully`;
+        if (voteType === "upvote") {
+          if (current.upvoted) {
+            newState.upvotes -= 1;
+            newState.upvoted = false;
+          } else {
+            newState.upvotes += 1;
+            newState.upvoted = true;
+
+            if (current.downvoted) {
+              newState.downvotes -= 1;
+              newState.downvoted = false;
+            }
+          }
+        } else {
+          if (current.downvoted) {
+            newState.downvotes -= 1;
+            newState.downvoted = false;
+          } else {
+            newState.downvotes += 1;
+            newState.downvoted = true;
+
+            if (current.upvoted) {
+              newState.upvotes -= 1;
+              newState.upvoted = false;
+            }
+          }
+        }
+
+        return newState;
+      });
+
+      // Create success message
+      const isAdding =
+        voteType === "upvote" ? !voteState.upvoted : !voteState.downvoted;
+
+      const successMessage = `${
+        voteType === "upvote" ? "Upvote" : "Downvote"
+      } ${isAdding ? "added" : "removed"} successfully`;
 
       toast({
         title: successMessage,
@@ -84,7 +187,11 @@ const Votes = ({
     <div className="flex-center gap-2.5">
       <div className="flex-center gap-1.5">
         <Image
-          src={success && upvoted ? "/icons/upvoted.svg" : "/icons/upvote.svg"}
+          src={
+            optimisticVoteState.upvoted
+              ? "/icons/upvoted.svg"
+              : "/icons/upvote.svg"
+          }
           alt="upvote"
           width={18}
           height={18}
@@ -95,7 +202,7 @@ const Votes = ({
 
         <div className="flex-center background-light700_dark400 min-w-5 rounded-sm p-1">
           <p className="subtle-medium text-dark400_light900">
-            {formatNumber(upvotes)}
+            {formatNumber(optimisticVoteState.upvotes)}
           </p>
         </div>
       </div>
@@ -103,7 +210,7 @@ const Votes = ({
       <div className="flex-center gap-1.5">
         <Image
           src={
-            success && downvoted
+            optimisticVoteState.downvoted
               ? "/icons/downvoted.svg"
               : "/icons/downvote.svg"
           }
@@ -117,7 +224,7 @@ const Votes = ({
 
         <div className="flex-center background-light700_dark400 min-w-5 rounded-sm p-1">
           <p className="subtle-medium text-dark400_light900">
-            {formatNumber(downvotes)}
+            {formatNumber(optimisticVoteState.downvotes)}
           </p>
         </div>
       </div>

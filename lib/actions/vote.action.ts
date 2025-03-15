@@ -11,8 +11,6 @@ import {
   GetVoteSchema,
   UpdateVoteCountSchema,
 } from "../validations";
-import { revalidatePath } from "next/cache";
-import ROUTES from "@/constants/routes";
 
 export async function updateVoteCount(
   params: UpdateVoteCountParams,
@@ -130,8 +128,6 @@ export async function createVote(
 
     await session.commitTransaction();
     session.endSession();
-
-    revalidatePath(ROUTES.QUESTION(actionId));
 
     return {
       success: true,
