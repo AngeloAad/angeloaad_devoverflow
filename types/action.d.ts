@@ -59,3 +59,8 @@ interface GetVoteResponse {
   upvoted: boolean;
   downvoted: boolean;
 }
+
+interface CollectionBaseParams {
+  questionId: string;
+}
+
