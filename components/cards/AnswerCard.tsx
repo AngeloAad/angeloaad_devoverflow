@@ -1,9 +1,12 @@
-import React from "react";
+import React, { Suspense } from "react";
 import UserAvatar from "../UserAvatar";
 import Link from "next/link";
 import ROUTES from "@/constants/routes";
 import { getTimeStamp } from "@/lib/utils";
 import Preview from "../editor/Preview";
+import Votes from "../votes/Votes";
+import VotesSkeleton from "../votes/VotesSkeleton";
+import { getVote } from "@/lib/actions/vote.action";
 
 const AnswerCard = ({
   _id,
@@ -13,6 +16,11 @@ const AnswerCard = ({
   downvotes,
   createdAt,
 }: Answer) => {
+  const getVotePromise = getVote({
+    actionId: _id,
+    actionType: "answer",
+  });
+
   return (
     <article className="light-border border-b py-10">
       <span id={JSON.stringify(_id)} className="hash-span" />
@@ -44,7 +52,17 @@ const AnswerCard = ({
               </p>
             </Link>
           </div>
-          <div className="flex items-center">Votes</div>
+          <div className="flex items-center">
+            <Suspense fallback={<VotesSkeleton />}>
+              <Votes
+                upvotes={upvotes}
+                downvotes={downvotes}
+                actionType="answer"
+                actionId={_id}
+                getVotePromise={getVotePromise}
+              />
+            </Suspense>
+          </div>
         </div>
       </div>
 
