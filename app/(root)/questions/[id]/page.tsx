@@ -62,31 +62,32 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     <>
       <div className="flex-start w-full flex-col">
         <div className="flex flex-col-reverse w-full justify-between">
-          <div className="flex items-center justify-start gap-1">
-            <UserAvatar
-              id={author._id}
-              name={author.name}
-              imageUrl={author.image}
-              className="size-[22px]"
-              fallbackClassName="text-[10px]"
-            />
-            <Link href={ROUTES.PROFILE(author._id)}>
-              <p className="paragraph-semibold text-dark300_light700">
-                {author.name}
-              </p>
-            </Link>
-          </div>
-
-          <div className="flex items-center justify-end">
-            <Suspense fallback={<VotesSkeleton />}>
-              <Votes
-                upvotes={upvotes}
-                downvotes={downvotes}
-                actionType="question"
-                actionId={question._id}
-                getVotePromise={getVotePromise}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <UserAvatar
+                id={author._id}
+                name={author.name}
+                imageUrl={author.image}
+                className="size-[22px]"
+                fallbackClassName="text-[10px]"
               />
-            </Suspense>
+              <Link href={ROUTES.PROFILE(author._id)}>
+                <p className="paragraph-semibold text-dark300_light700">
+                  {author.name}
+                </p>
+              </Link>
+            </div>
+            <div className="flex items-center">
+              <Suspense fallback={<VotesSkeleton />}>
+                <Votes
+                  upvotes={upvotes}
+                  downvotes={downvotes}
+                  actionType="question"
+                  actionId={question._id}
+                  getVotePromise={getVotePromise}
+                />
+              </Suspense>
+            </div>
           </div>
         </div>
 
