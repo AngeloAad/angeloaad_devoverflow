@@ -15,6 +15,7 @@ import AllAnswers from "@/components/answers/AllAnswers";
 import Votes from "@/components/votes/Votes";
 import VotesSkeleton from "@/components/votes/VotesSkeleton";
 import { getVote } from "@/lib/actions/vote.action";
+import SaveQuestions from "@/components/questions/SaveQuestions";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
@@ -77,7 +78,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
                 </p>
               </Link>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
               <Suspense fallback={<VotesSkeleton />}>
                 <Votes
                   upvotes={upvotes}
@@ -85,6 +86,12 @@ const QuestionDetails = async ({ params }: RouteParams) => {
                   actionType="question"
                   actionId={question._id}
                   getVotePromise={getVotePromise}
+                />
+              </Suspense>
+
+              <Suspense fallback={<p>Loading...</p>}>
+                <SaveQuestions
+                  questionId={question._id}
                 />
               </Suspense>
             </div>
