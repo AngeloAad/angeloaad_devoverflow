@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useOptimistic, startTransition } from "react";
 import { toggleSaveQuestion } from "@/lib/actions/collection.action";
 import { useSession } from "next-auth/react";
 import { toast } from "@/hooks/use-toast";
@@ -11,14 +11,22 @@ interface SaveQuestionsProps {
   getSavedQuestionPromise: Promise<ActionResponse<{ saved: boolean }>>;
 }
 
-const SaveQuestions = ({ questionId, getSavedQuestionPromise }: SaveQuestionsProps) => {
+const SaveQuestions = ({
+  questionId,
+  getSavedQuestionPromise,
+}: SaveQuestionsProps) => {
   const session = useSession();
   const userId = session.data?.user?.id;
 
   const { data } = use(getSavedQuestionPromise);
-  const { saved } = data || {};
+  const initialIsSaved = data?.saved ?? false;
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSaved, setIsSaved] = useState(initialIsSaved);
+
+  const [optimisticIsSaved, addOptimisticSaved] = useOptimistic(
+    isSaved,
+    (state, newState: boolean) => newState
+  );
 
   const handleSaveQuestion = async () => {
     if (!userId) {
@@ -29,7 +37,9 @@ const SaveQuestions = ({ questionId, getSavedQuestionPromise }: SaveQuestionsPro
       });
     }
 
-    setIsLoading(true);
+    startTransition(() => {
+      addOptimisticSaved(!isSaved);
+    });
 
     try {
       const { success, data, error } = await toggleSaveQuestion({
@@ -46,6 +56,8 @@ const SaveQuestions = ({ questionId, getSavedQuestionPromise }: SaveQuestionsPro
         });
       }
 
+      setIsSaved(data?.saved ?? false);
+
       toast({
         title: `Question ${data?.saved ? "saved" : "unsaved"} successfully`,
       });
@@ -56,18 +68,16 @@ const SaveQuestions = ({ questionId, getSavedQuestionPromise }: SaveQuestionsPro
           "An error occurred while saving question, please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <Image
-      src={saved ? "/icons/star-filled.svg" : "/icons/star-red.svg"}
+      src={optimisticIsSaved ? "/icons/star-filled.svg" : "/icons/star-red.svg"}
       alt="save"
       width={20}
       height={20}
-      className={`cursor-pointer ${isLoading && "opacity-50"}`}
+      className={`cursor-pointer`}
       aria-label="Save question"
       onClick={handleSaveQuestion}
     />
