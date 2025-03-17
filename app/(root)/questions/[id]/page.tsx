@@ -16,6 +16,7 @@ import Votes from "@/components/votes/Votes";
 import VotesSkeleton from "@/components/votes/VotesSkeleton";
 import { getVote } from "@/lib/actions/vote.action";
 import SaveQuestions from "@/components/questions/SaveQuestions";
+import { getSavedQuestion } from "@/lib/actions/collection.action";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
@@ -45,6 +46,10 @@ const QuestionDetails = async ({ params }: RouteParams) => {
   const getVotePromise = getVote({
     actionId: question._id,
     actionType: "question",
+  });
+
+  const getSavedQuestionPromise = getSavedQuestion({
+    questionId: question._id,
   });
 
   const {
@@ -92,6 +97,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
               <Suspense fallback={<p>Loading...</p>}>
                 <SaveQuestions
                   questionId={question._id}
+                  getSavedQuestionPromise={getSavedQuestionPromise}
                 />
               </Suspense>
             </div>

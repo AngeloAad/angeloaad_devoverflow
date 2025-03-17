@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { toggleSaveQuestion } from "@/lib/actions/collection.action";
 import { useSession } from "next-auth/react";
 import { toast } from "@/hooks/use-toast";
@@ -8,11 +8,16 @@ import Image from "next/image";
 
 interface SaveQuestionsProps {
   questionId: string;
+  getSavedQuestionPromise: Promise<ActionResponse<{ saved: boolean }>>;
 }
 
-const SaveQuestions = ({ questionId }: SaveQuestionsProps) => {
+const SaveQuestions = ({ questionId, getSavedQuestionPromise }: SaveQuestionsProps) => {
   const session = useSession();
   const userId = session.data?.user?.id;
+
+  const { data } = use(getSavedQuestionPromise);
+  const { saved } = data || {};
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSaveQuestion = async () => {
@@ -56,11 +61,9 @@ const SaveQuestions = ({ questionId }: SaveQuestionsProps) => {
     }
   };
 
-  const hasSaved = false;
-
   return (
     <Image
-      src={hasSaved ? "/icons/star-filled.svg" : "/icons/star-red.svg"}
+      src={saved ? "/icons/star-filled.svg" : "/icons/star-red.svg"}
       alt="save"
       width={20}
       height={20}
