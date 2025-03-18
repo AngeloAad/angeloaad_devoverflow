@@ -32,6 +32,12 @@ interface Answer {
   createdAt: Date;
 }
 
+interface Collection {
+  _id: string;
+  author: Author;
+  question: Question;
+}
+
 type ActionResponse<T = null> = {
   success: boolean;
   data?: T;
