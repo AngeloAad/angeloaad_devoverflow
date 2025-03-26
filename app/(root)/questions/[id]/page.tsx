@@ -18,6 +18,7 @@ import { getVote } from "@/lib/actions/vote.action";
 import SaveQuestions from "@/components/questions/SaveQuestions";
 import { getSavedQuestion } from "@/lib/actions/collection.action";
 import SaveQuestionsSkeleton from "@/components/questions/SaveQuestionsSkeleton";
+import SaveButtonContainer from "@/components/questions/SaveButtonContainer";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
@@ -95,12 +96,10 @@ const QuestionDetails = async ({ params }: RouteParams) => {
                 />
               </Suspense>
 
-              <Suspense fallback={<SaveQuestionsSkeleton />}>
-                <SaveQuestions
-                  questionId={question._id}
-                  getSavedQuestionPromise={getSavedQuestionPromise}
-                />
-              </Suspense>
+              <SaveButtonContainer
+                questionId={question._id}
+                getSavedQuestionPromise={getSavedQuestionPromise}
+              />
             </div>
           </div>
         </div>
