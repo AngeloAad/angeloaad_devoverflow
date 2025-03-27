@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import QuestionCard from "@/components/cards/QuestionCard";
 import LocalSearch from "@/components/search/LocalSearch";
-import { EMPTY_QUESTION } from "@/constants/states";
+import { EMPTY_COLLECTIONS } from "@/constants/states";
 import DataRenderer from "@/components/DataRenderer";
 import { getSavedQuestions } from "@/lib/actions/collection.action";
 import ROUTES from "@/constants/routes";
@@ -38,7 +38,7 @@ const Collections = async ({ searchParams }: SearchParams) => {
         success={success}
         error={error}
         data={collection}
-        empty={EMPTY_QUESTION}
+        empty={EMPTY_COLLECTIONS}
         render={(collection) =>
           collection.map((question) => (
             <div

@@ -158,7 +158,7 @@ export async function getSavedQuestions(
           as: "question.tags",
         },
       },
-    ]
+    ];
 
     if (query) {
       pipeline.push({
@@ -166,8 +166,8 @@ export async function getSavedQuestions(
           $or: [
             { "question.title": { $regex: query, $options: "i" } },
             { "question.content": { $regex: query, $options: "i" } },
-          ]
-        }
+          ],
+        },
       });
     }
 
@@ -181,7 +181,7 @@ export async function getSavedQuestions(
 
     const questions = await Collection.aggregate(pipeline);
 
-    const isNext = totalCount.count > skip + questions.length;
+    const isNext = (totalCount?.total || 0) > skip + questions.length;
 
     return {
       success: true,
