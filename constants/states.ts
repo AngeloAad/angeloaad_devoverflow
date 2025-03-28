@@ -53,3 +53,10 @@ export const EMPTY_ANSWERS = {
   title: "No Answers Found",
   message: "Be the first to answer this question.",
 };
+
+
+export const EMPTY_USERS = {
+  title: "No Users Found",
+  message:
+    "It's ALONE in the world. You're the only one here. Join us and let the world know who you are.",
+};
