@@ -36,7 +36,7 @@ export async function getUsers(
   let sortCriteria = {};
 
   switch (filter) {
-    case "mostrecent":
+    case "newest":
       sortCriteria = { createdAt: -1 };
       break;
     case "oldest":

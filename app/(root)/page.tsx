@@ -8,7 +8,8 @@ import ROUTES from "@/constants/routes";
 import { getQuestions } from "@/lib/actions/question.action";
 import { EMPTY_QUESTION } from "@/constants/states";
 import DataRenderer from "@/components/DataRenderer";
-
+import CommonFilter from "@/components/filters/CommonFilter";
+import { HomePageFilters } from "@/constants/filters";
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
@@ -36,12 +37,18 @@ const Home = async ({ searchParams }: SearchParams) => {
           <Link href={ROUTES.ASK_A_QUESTION}>Ask a Question</Link>
         </Button>
       </section>
-      <section className="mt-11">
+      <section className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearch
           route="/"
           imgSrc="/icons/search.svg"
           placeholder="Search questions..."
           otherClasses="flex-1"
+        />
+
+        <CommonFilter
+          filters={HomePageFilters}
+          otherClasses="min-h-[56px] sm:min-w-[170px]"
+          containerClasses="hidden max-md:flex"
         />
       </section>
       <HomeFilter />
@@ -51,13 +58,16 @@ const Home = async ({ searchParams }: SearchParams) => {
         error={error}
         data={questions}
         empty={EMPTY_QUESTION}
-        render={(questions) => (
+        render={(questions) =>
           questions.map((question) => (
-            <div key={question._id} className="mt-10 flex w-full flex-col gap-6">
+            <div
+              key={question._id}
+              className="mt-10 flex w-full flex-col gap-6"
+            >
               <QuestionCard question={question} />
             </div>
           ))
-        )}
+        }
       />
     </>
   );
