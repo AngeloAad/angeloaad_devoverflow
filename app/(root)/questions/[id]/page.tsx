@@ -20,8 +20,9 @@ import { getSavedQuestion } from "@/lib/actions/collection.action";
 import SaveQuestionsSkeleton from "@/components/questions/SaveQuestionsSkeleton";
 import SaveButtonContainer from "@/components/questions/SaveButtonContainer";
 
-const QuestionDetails = async ({ params }: RouteParams) => {
+const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
+  const { page, pageSize, filter } = await searchParams;
   const { success, data: question } = await getQuestion({
     questionId: id,
   });
@@ -40,9 +41,9 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     error: answersError,
   } = await getAnswers({
     questionId: id,
-    page: 1,
-    pageSize: 10,
-    filter: "newest",
+    page: Number(page) || 1,
+    pageSize: Number(pageSize) || 10,
+    filter,
   });
 
   const getVotePromise = getVote({

@@ -63,7 +63,7 @@ const CommonFilter = ({
           )}
           aria-label="Filter Options"
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pr-1">
             <Filter className="size-4" />
             <SelectValue placeholder="Select a filter">
               {activeFilterName}
