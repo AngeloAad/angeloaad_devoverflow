@@ -10,7 +10,7 @@ import ROUTES from '@/constants/routes';
 import LocalSearch from '@/components/search/LocalSearch';
 import CommonFilter from '@/components/filters/CommonFilter';
 import { TagFilters } from '@/constants/filters';
-
+import Pagination from '@/components/Pagination';
 const page = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
   const { page, pageSize, query } = await searchParams;
@@ -22,7 +22,7 @@ const page = async ({ params, searchParams }: RouteParams) => {
     query,
   });
 
-  const { tag, questions } = data || {};
+  const { tag, questions, isNext } = data || {};
   
   return (
     <>
@@ -56,6 +56,12 @@ const page = async ({ params, searchParams }: RouteParams) => {
             </div>
           ))
         )}
+      />
+
+      <Pagination
+        page={page}
+        isNext={isNext || false}
+        containerClasses="mt-10"
       />
     </>
   );

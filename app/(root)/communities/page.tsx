@@ -6,6 +6,7 @@ import { EMPTY_USERS } from "@/constants/states";
 import { getUsers } from "@/lib/actions/user.action";
 import CommonFilter from "@/components/filters/CommonFilter";
 import { UserFilters } from "@/constants/filters";
+import Pagination from "@/components/Pagination";
 
 const Community = async ({ searchParams }: RouteParams) => {
   const { page, pageSize, query, filter } = await searchParams;
@@ -48,6 +49,12 @@ const Community = async ({ searchParams }: RouteParams) => {
             ))}
           </div>
         )}
+      />
+
+      <Pagination
+        page={page}
+        isNext={isNext || false}
+        containerClasses="mt-10"
       />
     </>
   );

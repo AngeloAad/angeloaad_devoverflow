@@ -4,8 +4,10 @@ import { EMPTY_ANSWERS } from "@/constants/states";
 import AnswerCard from "../cards/AnswerCard";
 import CommonFilter from "../filters/CommonFilter";
 import { AnswerFilters } from "@/constants/filters";
-
+import Pagination from "../Pagination";
 interface AllAnswersProps extends ActionResponse<Answer[]> {
+  page: number;
+  isNext: boolean;
   totalAnswers: number;
 }
 
@@ -14,6 +16,8 @@ const AllAnswers = ({
   success,
   error,
   totalAnswers,
+  page,
+  isNext,
 }: AllAnswersProps) => {
   return (
     <div className="mt-11">
@@ -37,6 +41,12 @@ const AllAnswers = ({
             />
           ))
         }
+      />
+
+      <Pagination
+        page={page}
+        isNext={isNext}
+        containerClasses="mt-10"
       />
     </div>
   );
