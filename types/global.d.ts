@@ -85,3 +85,8 @@ interface IncrementViewsParams {
   questionId: string;
 }
 
+interface BadgeCounts {
+  GOLD: number;
+  SILVER: number;
+  BRONZE: number;
+}
