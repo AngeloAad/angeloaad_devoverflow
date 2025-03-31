@@ -1,7 +1,6 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { usePathname } from "next/navigation";
 import SaveQuestions from "./SaveQuestions";
 import SaveQuestionsSkeleton from "./SaveQuestionsSkeleton";
 

@@ -94,6 +94,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           account.provider === "github"
             ? (profile?.login as string) // GitHub uses the login name.
             : (user.name?.toLowerCase() as string), // For Google, use a lowercase version of the name.
+        // Add the bio if it exists in the profile
+        bio:
+          account.provider === "github" || account.provider === "google"
+            ? (profile?.bio as string)
+            : undefined,
+        // Add the portfolio/website URL if it exists in the profile
+        portfolio:
+          account.provider === "github" || account.provider === "google"
+            ? (profile?.blog as string)
+            : undefined,
+        // Add the location if it exists in the profile
+        location:
+          account.provider === "github" || account.provider === "google"
+            ? (profile?.location as string)
+            : undefined,
       };
 
       // Sync with the backend; allow sign-in only if successful.

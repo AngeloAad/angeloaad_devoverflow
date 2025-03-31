@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       throw new ValidationError(validatedData.error.flatten().fieldErrors);
 
     // Destructure the necessary user fields from the request
-    const { name, username, email, image } = user;
+    const { name, username, email, image, bio, portfolio, location } = user;
 
     // Generate a slugified version of the username for URL-friendly use
     const slugifiedUsername = slugify(username, {
@@ -51,17 +51,23 @@ export async function POST(request: Request) {
     if (!existingUser) {
       // If the user does not exist, create a new user document
       [existingUser] = await User.create(
-        [{ name, username: slugifiedUsername, email, image }],
+        [{ name, username: slugifiedUsername, email, image, bio, portfolio, location }],
         { session }
       );
     } else {
       // If the user exists, prepare to update any changed fields
-      const updatedData: { name?: string; image?: string } = {};
+      const updatedData: { name?: string; image?: string; bio?: string; portfolio?: string; location?: string } = {};
 
       // Update name if it has changed
       if (existingUser.name !== name) updatedData.name = name;
       // Update image if it has changed
       if (existingUser.image !== image) updatedData.image = image;
+      // Update bio if it has changed
+      if (existingUser.bio !== bio) updatedData.bio = bio;
+      // Update portfolio if it has changed
+      if (existingUser.portfolio !== portfolio) updatedData.portfolio = portfolio;
+      // Update location if it has changed
+      if (existingUser.location !== location) updatedData.location = location;
 
       // If there are any changes, update the user document
       if (Object.keys(updatedData).length > 0) {
