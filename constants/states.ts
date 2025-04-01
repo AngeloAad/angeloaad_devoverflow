@@ -23,6 +23,12 @@ export const DEFAULT_ERROR = {
 export const EMPTY_QUESTION = {
   title: "Ahh, No Questions Yet!",
   message:
+    "Looks like this User hasn't asked any questions yet.",
+};
+
+export const EMPTY_QUESTIONS = {
+  title: "Ahh, No Questions Yet!",
+  message:
     "The question board is empty. Maybe it’s waiting for your brilliant question to get things rolling",
   button: {
     text: "Ask a Question",
@@ -47,6 +53,11 @@ export const EMPTY_COLLECTIONS = {
     text: "Save to Collection",
     href: ROUTES.HOME,
   },
+};
+
+export const EMPTY_ANSWER = {
+  title: "No Answers Found",
+  message: "Looks like this User hasn't answered any questions yet.",
 };
 
 export const EMPTY_ANSWERS = {

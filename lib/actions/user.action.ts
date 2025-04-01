@@ -163,7 +163,8 @@ export async function getUserAnswers(params: GetUserAnswersParams): Promise<Acti
   try {
     const totalAnswers = await Answer.countDocuments({ author: userId });
     const answers = await Answer.find({ author: userId })
-      .sort({ createdAt: -1, upvotes: -1 })
+      .populate("author", "_id name image")
+      .populate("question", "_id title")
       .skip(skip)
       .limit(limit);
 

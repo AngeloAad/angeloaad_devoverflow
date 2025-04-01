@@ -13,9 +13,10 @@ import ProfileLink from "@/components/user/ProfileLink";
 import Stats from "@/components/user/Stats";
 import { TabsList, Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import DataRenderer from "@/components/DataRenderer";
-import { EMPTY_QUESTION } from "@/constants/states";
+import { EMPTY_QUESTION, EMPTY_ANSWER } from "@/constants/states";
 import QuestionCard from "@/components/cards/QuestionCard";
 import Pagination from "@/components/Pagination";
+import AnswerCard from "@/components/cards/AnswerCard";
 
 const Profile = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
@@ -36,9 +37,9 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
   }
 
   const {
-    success: UserSuccessQuestions,
+    success: UserQuestionsSuccess,
     data: UserQuestionsData,
-    error: UserErrorQuestions,
+    error: UserQuestionsError,
   } = await getUserQuestions({
     userId: id,
     page: Number(page) || 1,
@@ -46,9 +47,9 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
   });
 
   const {
-    success: UserSuccessAnswers,
+    success: UserAnswersSuccess,
     data: UserAnswersData,
-    error: UserErrorAnswers,
+    error: UserAnswersError,
   } = await getUserAnswers({
     userId: id,
     page: Number(page) || 1,
@@ -69,6 +70,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
   } = user;
 
   const { questions, isNext: hasMoreQuestions } = UserQuestionsData || {};
+  const { answers, isNext: hasMoreAnswers } = UserAnswersData || {};
 
   return (
     <>
@@ -166,8 +168,8 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
             className="mt-5 flex w-full flex-col gap-6"
           >
             <DataRenderer
-              success={UserSuccessQuestions}
-              error={UserErrorQuestions}
+              success={UserQuestionsSuccess}
+              error={UserQuestionsError}
               data={questions}
               empty={EMPTY_QUESTION}
               render={(questions) =>
@@ -191,7 +193,32 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
             value="top-answers"
             className="flex w-full flex-col gap-6"
           >
-            List of Answers here
+            <DataRenderer
+              success={UserAnswersSuccess}
+              error={UserAnswersError}
+              data={answers}
+              empty={EMPTY_ANSWER}
+              render={(answers) =>
+                answers.map((answer) => (
+                  <div
+                    key={answer._id}
+                    className="mt-10 flex w-full flex-col gap-6"
+                  >
+                    <AnswerCard 
+                    {...answer} 
+                    content={answer.content.slice(0, 27)}
+                    showReadMode={true}
+                    containerClasses="card-wrapper rounded-[10px] px-7 sm:px-11"
+                    />
+                  </div>
+                ))
+              }
+            />
+            <Pagination
+              page={page}
+              isNext={hasMoreAnswers || false}
+              containerClasses="mt-10"
+            />
           </TabsContent>
         </Tabs>
 
