@@ -31,7 +31,7 @@ const Pagination = ({
       value: nextPageNumber.toString(),
     });
 
-    router.push(newUrl);
+    router.push(newUrl, { scroll: false });
   };
   return (
     <div
