@@ -2,6 +2,7 @@ import {
   getUser,
   getUserAnswers,
   getUserQuestions,
+  getUserTags,
 } from "@/lib/actions/user.action";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
@@ -13,10 +14,11 @@ import ProfileLink from "@/components/user/ProfileLink";
 import Stats from "@/components/user/Stats";
 import { TabsList, Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import DataRenderer from "@/components/DataRenderer";
-import { EMPTY_QUESTION, EMPTY_ANSWER } from "@/constants/states";
+import { EMPTY_QUESTION, EMPTY_ANSWER, EMPTY_TAGS } from "@/constants/states";
 import QuestionCard from "@/components/cards/QuestionCard";
 import Pagination from "@/components/Pagination";
 import AnswerCard from "@/components/cards/AnswerCard";
+import TagCard from "@/components/cards/TagCard";
 
 const Profile = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
@@ -56,6 +58,14 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
     pageSize: Number(pageSize) || 10,
   });
 
+  const {
+    success: UserTagsSuccess,
+    data: UserTagsData,
+    error: UserTagsError,
+  } = await getUserTags({
+    userId: id,
+  });
+
   const { user, totalQuestions, totalAnswers } = data;
   const {
     _id,
@@ -69,8 +79,9 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
     createdAt,
   } = user;
 
-  const { questions, isNext: hasMoreQuestions } = UserQuestionsData || {};
-  const { answers, isNext: hasMoreAnswers } = UserAnswersData || {};
+  const { questions, isNext: hasMoreQuestions } = UserQuestionsData!;
+  const { answers, isNext: hasMoreAnswers } = UserAnswersData!;
+  const { tags } = UserTagsData!;
 
   return (
     <>
@@ -204,11 +215,11 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
                     key={answer._id}
                     className="mt-10 flex w-full flex-col gap-6"
                   >
-                    <AnswerCard 
-                    {...answer} 
-                    content={answer.content.slice(0, 27)}
-                    showReadMode={true}
-                    containerClasses="card-wrapper rounded-[10px] px-7 sm:px-11"
+                    <AnswerCard
+                      {...answer}
+                      content={answer.content.slice(0, 27)}
+                      showReadMode={true}
+                      containerClasses="card-wrapper rounded-[10px] px-7 sm:px-11"
                     />
                   </div>
                 ))
@@ -225,7 +236,28 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
         <div className="flex w-full min-w-[250px] flex-1 flex-col max-lg:hidden">
           <h3 className="h3-bold text-dark200_light900">Top Tech</h3>
           <div className="mt-7 flex flex-col gap-4">
-            <p>List of Tags</p>
+            <DataRenderer
+              success={UserTagsSuccess}
+              error={UserTagsError}
+              data={tags}
+              empty={EMPTY_TAGS}
+              render={(tags) =>
+                tags.map((tag) => (
+                  <div
+                    key={tag._id}
+                    className="mt-10 flex w-full flex-col gap-6"
+                  >
+                    <TagCard
+                      _id={tag._id}
+                      name={tag.name}
+                      questions={tag.count}
+                      showCount={true}
+                      compact={true}
+                    />
+                  </div>
+                ))
+              }
+            />
           </div>
         </div>
       </section>

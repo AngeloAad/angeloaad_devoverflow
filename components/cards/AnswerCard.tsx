@@ -79,7 +79,7 @@ const AnswerCard = ({
       {showReadMode && (
         <Link href={`/questions/${question._id}#answer-${_id}`} 
         className="body-semibold relative z-10 font-space-grotesk text-primary-500">
-          <p>Read More...</p>
+          <p className="mt-2">Read More...</p>
         </Link>
       )}
     </article>
