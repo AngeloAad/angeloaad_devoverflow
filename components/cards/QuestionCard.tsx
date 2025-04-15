@@ -6,15 +6,19 @@ import TagCard from "./TagCard";
 import Metric from "../Metric";
 import { getSavedQuestion } from "@/lib/actions/collection.action";
 import SaveButtonContainer from "../questions/SaveButtonContainer";
-
+import EditDeleteAction from "../user/EditDeleteAction";
 interface Props {
   question: Question;
   showSaveButton?: boolean;
+  showEditButton?: boolean;
+  showDeleteButton?: boolean;
 }
 
 const QuestionCard = ({
   question: { _id, title, tags, author, createdAt, upvotes, answers, views },
   showSaveButton = false,
+  showEditButton = false,
+  showDeleteButton = false,
 }: Props) => {
   const getSavedQuestionPromise = getSavedQuestion({
     questionId: _id,
@@ -39,6 +43,15 @@ const QuestionCard = ({
               <SaveButtonContainer
                 questionId={_id}
                 getSavedQuestionPromise={getSavedQuestionPromise}
+              />
+            )}
+
+            {(showEditButton || showDeleteButton) && (
+              <EditDeleteAction
+                type="Question"
+                itemId={_id}
+                showEditButton={showEditButton}
+                showDeleteButton={showDeleteButton}
               />
             )}
           </div>

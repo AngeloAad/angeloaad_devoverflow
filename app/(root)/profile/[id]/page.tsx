@@ -189,7 +189,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
                     key={question._id}
                     className="mt-10 flex w-full flex-col gap-6"
                   >
-                    <QuestionCard question={question} />
+                    <QuestionCard question={question} showEditButton={true} showDeleteButton={true} />
                   </div>
                 ))
               }

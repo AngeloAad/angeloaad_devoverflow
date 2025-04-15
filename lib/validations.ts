@@ -1,6 +1,19 @@
-import { userAgentFromString } from "next/server";
 import { z } from "zod";
 
+// =========================================================================
+// Search/Pagination Related Schemas (Define first as others depend on it)
+// =========================================================================
+export const PaginatedSearchParamsSchema = z.object({
+  page: z.number().int().positive().default(1),
+  pageSize: z.number().int().positive().default(10),
+  query: z.string().optional(),
+  filter: z.string().optional(),
+  sort: z.string().optional(),
+});
+
+// =========================================================================
+// Auth Related Schemas
+// =========================================================================
 export const SignInSchema = z.object({
   email: z
     .string()
@@ -51,46 +64,21 @@ export const SignUpSchema = z.object({
     }),
 });
 
-export const AskQuestionSchema = z.object({
-  title: z
+export const SignInWithOAuthSchema = z.object({
+  provider: z.enum(["google", "github"]),
+  providerAccountId: z
     .string()
-    .min(5, { message: "Title is required." })
-    .max(100, { message: "Title cannot exceed 100 characters." }),
-
-  content: z.string().min(50, { message: "Body is required." }),
-  tags: z
-    .array(
-      z
-        .string()
-        .min(1, { message: "Tag is required." })
-        .max(30, { message: "Tag cannot exceed 30 characters." })
-    )
-    .min(1, { message: "At least one tag is required." })
-    .max(5, { message: "Cannot add more than 5 tags." }),
-});
-
-export const EditQuestionSchema = AskQuestionSchema.extend({
-  questionId: z.string().min(1, { message: "Question ID is required." }),
-});
-
-export const GetQuestionSchema = z.object({
-  questionId: z.string().min(1, { message: "Question ID is required." }),
-});
-
-export const UserSchema = z.object({
-  name: z.string().min(1, { message: "Name is required." }),
-  username: z
-    .string()
-    .min(3, { message: "Username must be at least 3 characters long." }),
-  email: z.string().email({ message: "Please provide a valid email address." }),
-  bio: z.string().optional(),
-  image: z.string().url({ message: "Please provide a valid URL." }).optional(),
-  location: z.string().optional(),
-  portfolio: z
-    .string()
-    .url({ message: "Please provide a valid URL." })
-    .optional(),
-  reputation: z.number().optional(),
+    .min(1, { message: "Provider Account ID is required." }),
+  user: z.object({
+    name: z.string().min(1, { message: "Name is required." }),
+    username: z
+      .string()
+      .min(3, { message: "Username must be at least 3 characters long." }),
+    email: z
+      .string()
+      .email({ message: "Please provide a valid email address." }),
+    image: z.string().url("Invalid image URL").optional(),
+  }),
 });
 
 export const AccountSchema = z.object({
@@ -118,39 +106,46 @@ export const AccountSchema = z.object({
     .min(1, { message: "Provider Account ID is required." }),
 });
 
-export const SignInWithOAuthSchema = z.object({
-  provider: z.enum(["google", "github"]),
-  providerAccountId: z
+// =========================================================================
+// Question Related Schemas
+// =========================================================================
+export const AskQuestionSchema = z.object({
+  title: z
     .string()
-    .min(1, { message: "Provider Account ID is required." }),
-  user: z.object({
-    name: z.string().min(1, { message: "Name is required." }),
-    username: z
-      .string()
-      .min(3, { message: "Username must be at least 3 characters long." }),
-    email: z
-      .string()
-      .email({ message: "Please provide a valid email address." }),
-    image: z.string().url("Invalid image URL").optional(),
-  }),
+    .min(5, { message: "Title is required." })
+    .max(100, { message: "Title cannot exceed 100 characters." }),
+
+  content: z.string().min(50, { message: "Body is required." }),
+  tags: z
+    .array(
+      z
+        .string()
+        .min(1, { message: "Tag is required." })
+        .max(30, { message: "Tag cannot exceed 30 characters." })
+    )
+    .min(1, { message: "At least one tag is required." })
+    .max(5, { message: "Cannot add more than 5 tags." }),
 });
 
-export const PaginatedSearchParamsSchema = z.object({
-  page: z.number().int().positive().default(1),
-  pageSize: z.number().int().positive().default(10),
-  query: z.string().optional(),
-  filter: z.string().optional(),
-  sort: z.string().optional(),
+export const EditQuestionSchema = AskQuestionSchema.extend({
+  questionId: z.string().min(1, { message: "Question ID is required." }),
 });
 
-export const GetTagQuestionsSchema = PaginatedSearchParamsSchema.extend({
-  tagId: z.string().min(1, { message: "Tag ID is required." }),
+export const GetQuestionSchema = z.object({
+  questionId: z.string().min(1, { message: "Question ID is required." }),
 });
 
 export const IncrementViewsSchema = z.object({
   questionId: z.string().min(1, { message: "Question ID is required." }),
 });
 
+export const DeleteQuestionSchema = z.object({
+  questionId: z.string().min(1, { message: "Question ID is required." }),
+});
+
+// =========================================================================
+// Answer Related Schemas
+// =========================================================================
 export const AnswerSchema = z.object({
   content: z
     .string()
@@ -165,17 +160,9 @@ export const GetAnswersSchema = PaginatedSearchParamsSchema.extend({
   questionId: z.string().min(1, { message: "Question ID is required." }),
 });
 
-export const AIAnswerSchema = z.object({
-  question: z
-    .string()
-    .min(1, { message: "Question is required." })
-    .max(150, { message: "Question cannot exceed 150 characters." }),
-  content: z
-    .string()
-    .min(50, { message: "Answer has to have more than 50 characters." }),
-  userAnswer: z.string().optional(),
-});
-
+// =========================================================================
+// Vote Related Schemas
+// =========================================================================
 export const CreateVoteSchema = z.object({
   actionId: z.string().min(1, { message: "Action ID is required." }),
   actionType: z.enum(["question", "answer"], {
@@ -193,8 +180,30 @@ export const GetVoteSchema = CreateVoteSchema.pick({
   actionType: true,
 });
 
+// =========================================================================
+// Collection Related Schemas
+// =========================================================================
 export const CollectionBaseSchema = z.object({
   questionId: z.string().min(1, { message: "Question ID is required." }),
+});
+
+// =========================================================================
+// User Related Schemas
+// =========================================================================
+export const UserSchema = z.object({
+  name: z.string().min(1, { message: "Name is required." }),
+  username: z
+    .string()
+    .min(3, { message: "Username must be at least 3 characters long." }),
+  email: z.string().email({ message: "Please provide a valid email address." }),
+  bio: z.string().optional(),
+  image: z.string().url({ message: "Please provide a valid URL." }).optional(),
+  location: z.string().optional(),
+  portfolio: z
+    .string()
+    .url({ message: "Please provide a valid URL." })
+    .optional(),
+  reputation: z.number().optional(),
 });
 
 export const GetUserSchema = z.object({
@@ -205,11 +214,31 @@ export const GetUserQuestionsSchema = PaginatedSearchParamsSchema.extend({
   userId: z.string().min(1, { message: "User ID is required." }),
 });
 
-
 export const GetUserAnswersSchema = PaginatedSearchParamsSchema.extend({
   userId: z.string().min(1, { message: "User ID is required." }),
 });
 
 export const GetUserTagsSchema = z.object({
   userId: z.string().min(1, { message: "User ID is required." }),
+});
+
+// =========================================================================
+// Tag Related Schemas
+// =========================================================================
+export const GetTagQuestionsSchema = PaginatedSearchParamsSchema.extend({
+  tagId: z.string().min(1, { message: "Tag ID is required." }),
+});
+
+// =========================================================================
+// AI Related Schemas
+// =========================================================================
+export const AIAnswerSchema = z.object({
+  question: z
+    .string()
+    .min(1, { message: "Question is required." })
+    .max(150, { message: "Question cannot exceed 150 characters." }),
+  content: z
+    .string()
+    .min(50, { message: "Answer has to have more than 50 characters." }),
+  userAnswer: z.string().optional(),
 });
