@@ -18,9 +18,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         const validatedFields = SignInSchema.safeParse(credentials);
 
-        if (validatedFields.success) {
+        if (validatedFields.success) {  
           const { email, password } = validatedFields.data;
 
+          // const { data: existingAccount } = (await api.accounts.getByEmail(
+          //   email
+          // )) as ActionResponse<IAccountDoc>;
           const { data: existingAccount } = (await api.accounts.getByProvider(
             email
           )) as ActionResponse<IAccountDoc>;
@@ -62,6 +65,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // Update the JWT token during sign-in to include the user ID from the backend.
     async jwt({ token, account }) {
       if (account) {
+       // let accountResponse;
+        // if (account.type === "credentials") {
+        //   // Use the email endpoint for credentials-based sign-ins.
+        //   accountResponse = await api.accounts.getByEmail(token.email!);
+        // } else {
+        //   // Use the provider endpoint for OAuth sign-ins.
+        //   accountResponse = await api.accounts.getByProvider(account.providerAccountId);
+        // }
+        // const { data: existingAccount, success } = accountResponse as ActionResponse<IAccountDoc>;
         // Retrieve existing account info from the backend using either email or provider ID.
         const { data: existingAccount, success } =
           (await api.accounts.getByProvider(
@@ -69,7 +81,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               ? token.email! // For credentials-based logins.
               : account.providerAccountId // For OAuth logins.
           )) as ActionResponse<IAccountDoc>;
-
+          
         // If the account is found, store its userId in the token.
         if (success && existingAccount) {
           const userId = existingAccount.userId;
