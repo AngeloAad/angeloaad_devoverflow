@@ -83,6 +83,8 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
   const { answers, isNext: hasMoreAnswers } = UserAnswersData!;
   const { tags } = UserTagsData!;
 
+  const loggedInUserId = loggedInUser?.user?.id;
+
   return (
     <>
       <section className="flex flex-col-reverse items-start justify-between sm:flex-row">
@@ -189,7 +191,11 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
                     key={question._id}
                     className="mt-10 flex w-full flex-col gap-6"
                   >
-                    <QuestionCard question={question} showEditButton={true} showDeleteButton={true} />
+                    <QuestionCard
+                      question={question}
+                      showEditButton={true}
+                      showDeleteButton={true}
+                    />
                   </div>
                 ))
               }
@@ -210,19 +216,24 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
               data={answers}
               empty={EMPTY_ANSWER}
               render={(answers) =>
-                answers.map((answer) => (
-                  <div
-                    key={answer._id}
-                    className="mt-10 flex w-full flex-col gap-6"
-                  >
-                    <AnswerCard
-                      {...answer}
-                      content={answer.content.slice(0, 27)}
-                      showReadMode={true}
-                      containerClasses="card-wrapper rounded-[10px] px-7 sm:px-11"
-                    />
-                  </div>
-                ))
+                answers.map((answer) => {
+                  const isAuthor = loggedInUserId === answer.author._id;
+                  return (
+                    <div
+                      key={answer._id}
+                      className="mt-10 flex w-full flex-col gap-6"
+                    >
+                      <AnswerCard
+                        {...answer}
+                        content={answer.content.slice(0, 27)}
+                        showReadMode={true}
+                        containerClasses="card-wrapper rounded-[10px] px-7 sm:px-11"
+                        showEditButton={isAuthor}
+                        showDeleteButton={isAuthor}
+                      />
+                    </div>
+                  );
+                })
               }
             />
             <Pagination

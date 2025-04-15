@@ -448,6 +448,7 @@ export async function deleteQuestion(params: DeleteQuestionParams) {
       success: true,
     };
   } catch (error) {
+    await session.abortTransaction();
     return handleError(error) as ErrorResponse;
   }
 }

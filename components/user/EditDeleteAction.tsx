@@ -4,8 +4,8 @@ import { deleteQuestion } from "@/lib/actions/question.action";
 
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { Button } from "../ui/button";
 import Image from "next/image";
+import { deleteAnswer, editAnswer } from "@/lib/actions/answer.action";
 interface Props {
   type: "Question" | "Answer";
   itemId: string;
@@ -13,14 +13,19 @@ interface Props {
   showDeleteButton?: boolean;
 }
 
-const EditDeleteAction = ({ type, itemId, showEditButton, showDeleteButton }: Props) => {
+const EditDeleteAction = ({
+  type,
+  itemId,
+  showEditButton,
+  showDeleteButton,
+}: Props) => {
   const router = useRouter();
 
   const handleEdit = async () => {
     if (type === "Question") {
       router.push(`/questions/${itemId}/edit`);
     } else if (type === "Answer") {
-      // TODO: implement edit answer (editAnswer)
+      await editAnswer({ answerId: itemId, content: "", questionId: "" });
     }
   };
 
@@ -34,7 +39,7 @@ const EditDeleteAction = ({ type, itemId, showEditButton, showDeleteButton }: Pr
         description: "Your question has been successfully deleted.",
       });
     } else if (type === "Answer") {
-      // TODO: implement delete answer (deleteAnswer)
+      await deleteAnswer({ answerId: itemId });
 
       toast({
         title: "Answer Deleted",
@@ -47,12 +52,20 @@ const EditDeleteAction = ({ type, itemId, showEditButton, showDeleteButton }: Pr
   return (
     <div className="flex items-center justify-end gap-3 max-sm:w-full cursor-pointer">
       {showEditButton && (
-        <Image src="/icons/edit.svg" alt="edit" width={16} height={16}
+        <Image
+          src="/icons/edit.svg"
+          alt="edit"
+          width={16}
+          height={16}
           onClick={handleEdit}
         />
       )}
       {showDeleteButton && (
-        <Image src="/icons/trash.svg" alt="delete" width={16} height={16}
+        <Image
+          src="/icons/trash.svg"
+          alt="delete"
+          width={16}
+          height={16}
           onClick={handleDelete}
         />
       )}

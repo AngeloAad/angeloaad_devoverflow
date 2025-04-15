@@ -1,11 +1,16 @@
 "use server";
 
 import Answer, { IAnswerDoc } from "@/database/answer.model";
-import { CreateAnswerSchema, GetAnswersSchema } from "../validations";
+import {
+  CreateAnswerSchema,
+  DeleteAnswerSchema,
+  EditAnswerSchema,
+  GetAnswersSchema,
+} from "../validations";
 import mongoose, { FilterQuery } from "mongoose";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
-import { Question } from "@/database";
+import { Question, Vote } from "@/database";
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
 
@@ -112,7 +117,7 @@ export const getAnswers = async (
       .populate("author", "_id name image")
       .sort(sortCriteria)
       .skip(skip)
-      .limit(limit)
+      .limit(limit);
 
     const isNext = totalAnswers > skip + answers.length;
 
@@ -125,6 +130,115 @@ export const getAnswers = async (
       },
     };
   } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+export const editAnswer = async (
+  params: EditAnswerParams
+): Promise<ActionResponse<IAnswerDoc>> => {
+  const validationResult = await action({
+    params,
+    schema: EditAnswerSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { answerId, content } = validationResult.params!;
+  const userId = validationResult?.session?.user?.id;
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const answer = await Answer.findById(answerId);
+
+    if (!answer) {
+      throw new Error("Answer not found");
+    }
+
+    if (answer.author.toString() !== userId) {
+      throw new Error("You are not authorized to edit this answer");
+    }
+
+    answer.content = content;
+    await answer.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    // Revalidate the question page to show the updated answer
+    revalidatePath(ROUTES.QUESTION(answer.question.toString()));
+
+    return { success: true, data: JSON.parse(JSON.stringify(answer)) };
+  } catch (error) {
+    await session.abortTransaction(); // Abort transaction on error
+    session.endSession(); // Ensure session ends even on error
+    return handleError(error) as ErrorResponse;
+  } finally {
+    // Ensure session ends if not already ended
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    await session.endSession();
+  }
+};
+
+export const deleteAnswer = async (
+  params: DeleteAnswerParams
+): Promise<ActionResponse<IAnswerDoc>> => {
+  const validationResult = await action({
+    params,
+    schema: DeleteAnswerSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { answerId } = validationResult.params!;
+  const userId = validationResult?.session?.user?.id;
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const answer = await Answer.findById(answerId);
+
+    if (!answer) {
+      throw new Error("Answer not found");
+    }
+
+    if (answer.author.toString() !== userId) {
+      throw new Error("You are not authorized to delete this answer");
+    }
+
+    await Question.findByIdAndUpdate(
+      answer.question,
+      { $inc: { answers: -1 } },
+      { new: true, session }
+    );
+
+    await Vote.deleteMany({ actionId: answerId, actionType: "answer" }).session(
+      session
+    );
+
+    await Answer.findByIdAndDelete(answerId).session(session);
+
+    await session.commitTransaction();
+    session.endSession();
+
+    revalidatePath(`/profile/${userId}`);
+
+    return { success: true };
+  } catch (error) {
+    await session.abortTransaction();
     return handleError(error) as ErrorResponse;
   }
 };

@@ -25,7 +25,6 @@ export const SignInSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters long. " })
     .max(100, { message: "Password cannot exceed 100 characters." }),
 });
-
 export const SignUpSchema = z.object({
   username: z
     .string()
@@ -63,7 +62,6 @@ export const SignUpSchema = z.object({
       message: "Password must contain at least one special character.",
     }),
 });
-
 export const SignInWithOAuthSchema = z.object({
   provider: z.enum(["google", "github"]),
   providerAccountId: z
@@ -80,7 +78,6 @@ export const SignInWithOAuthSchema = z.object({
     image: z.string().url("Invalid image URL").optional(),
   }),
 });
-
 export const AccountSchema = z.object({
   userId: z.string().min(1, { message: "User ID is required." }),
   name: z.string().min(1, { message: "Name is required." }),
@@ -126,19 +123,15 @@ export const AskQuestionSchema = z.object({
     .min(1, { message: "At least one tag is required." })
     .max(5, { message: "Cannot add more than 5 tags." }),
 });
-
 export const EditQuestionSchema = AskQuestionSchema.extend({
   questionId: z.string().min(1, { message: "Question ID is required." }),
 });
-
 export const GetQuestionSchema = z.object({
   questionId: z.string().min(1, { message: "Question ID is required." }),
 });
-
 export const IncrementViewsSchema = z.object({
   questionId: z.string().min(1, { message: "Question ID is required." }),
 });
-
 export const DeleteQuestionSchema = z.object({
   questionId: z.string().min(1, { message: "Question ID is required." }),
 });
@@ -151,11 +144,16 @@ export const AnswerSchema = z.object({
     .string()
     .min(50, { message: "Answer must be at least 50 characters long." }),
 });
-
+export const EditAnswerSchema = AnswerSchema.extend({
+  answerId: z.string().min(1, { message: "Answer ID is required." }),
+  questionId: z.string().min(1, { message: "Question ID is required." }),
+});
+export const DeleteAnswerSchema = z.object({
+  answerId: z.string().min(1, { message: "Answer ID is required." }),
+});
 export const CreateAnswerSchema = AnswerSchema.extend({
   questionId: z.string().min(1, { message: "Question ID is required." }),
 });
-
 export const GetAnswersSchema = PaginatedSearchParamsSchema.extend({
   questionId: z.string().min(1, { message: "Question ID is required." }),
 });
@@ -170,11 +168,9 @@ export const CreateVoteSchema = z.object({
   }),
   voteType: z.enum(["upvote", "downvote"], { message: "Invalid vote type." }),
 });
-
 export const UpdateVoteCountSchema = CreateVoteSchema.extend({
   change: z.number().int().min(-1).max(1),
 });
-
 export const GetVoteSchema = CreateVoteSchema.pick({
   actionId: true,
   actionType: true,
@@ -205,19 +201,15 @@ export const UserSchema = z.object({
     .optional(),
   reputation: z.number().optional(),
 });
-
 export const GetUserSchema = z.object({
   userId: z.string().min(1, { message: "User ID is required." }),
 });
-
 export const GetUserQuestionsSchema = PaginatedSearchParamsSchema.extend({
   userId: z.string().min(1, { message: "User ID is required." }),
 });
-
 export const GetUserAnswersSchema = PaginatedSearchParamsSchema.extend({
   userId: z.string().min(1, { message: "User ID is required." }),
 });
-
 export const GetUserTagsSchema = z.object({
   userId: z.string().min(1, { message: "User ID is required." }),
 });

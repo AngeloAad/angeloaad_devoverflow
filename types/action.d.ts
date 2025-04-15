@@ -46,6 +46,12 @@ interface CreateAnswerParams {
 interface GetAnswersParams extends PaginatedSearchParams {
   questionId: string;
 }
+interface EditAnswerParams extends CreateAnswerParams {
+  answerId: string;
+}
+interface DeleteAnswerParams {
+  answerId: string;
+}
 
 
 // Vote Related Params

@@ -34,20 +34,11 @@ const AllAnswers = ({
         error={error}
         empty={EMPTY_ANSWERS}
         render={(answers) =>
-          answers.map((answer) => (
-            <AnswerCard
-              key={answer._id}
-              {...answer}
-            />
-          ))
+          answers.map((answer) => <AnswerCard key={answer._id} {...answer} />)
         }
       />
 
-      <Pagination
-        page={page}
-        isNext={isNext}
-        containerClasses="mt-10"
-      />
+      <Pagination page={page} isNext={isNext} containerClasses="mt-10" />
     </div>
   );
 };
