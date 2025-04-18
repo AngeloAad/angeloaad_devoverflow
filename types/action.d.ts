@@ -1,4 +1,3 @@
-
 // Auth Related Params
 interface SignInWithOAuthParams {
   provider: "github" | "google";
@@ -17,8 +16,9 @@ interface AuthCredentials {
   password: string;
 }
 
-
+// =========================================================================
 // Question Related Params
+// =========================================================================
 interface CreateQuestionParams {
   title: string;
   content: string;
@@ -37,8 +37,9 @@ interface DeleteQuestionParams {
   questionId: string;
 }
 
-
+// =========================================================================
 // Answer Related Params
+// =========================================================================
 interface CreateAnswerParams {
   questionId: string;
   content: string;
@@ -56,8 +57,9 @@ interface DeleteAnswerParams {
   answerId: string;
 }
 
-
+// =========================================================================
 // Vote Related Params
+// =========================================================================
 interface CreateVoteParams {
   actionId: string;
   actionType: "question" | "answer";
@@ -72,23 +74,51 @@ interface GetVoteResponse {
   downvoted: boolean;
 }
 
-
+// =========================================================================
 // Collection Related Params
+// =========================================================================
 interface CollectionBaseParams {
   questionId: string;
 }
 
-
+// =========================================================================
 // User Related Params
+// =========================================================================
 interface GetUserParams {
   userId: string;
 }
-interface GetUserQuestionsParams extends Omit<PaginatedSearchParams, "filter" | "sort" | "query"> {
+interface GetUserQuestionsParams
+  extends Omit<PaginatedSearchParams, "filter" | "sort" | "query"> {
   userId: string;
 }
-interface GetUserAnswersParams extends Omit<PaginatedSearchParams, "filter" | "sort" | "query"> {
+interface GetUserAnswersParams
+  extends Omit<PaginatedSearchParams, "filter" | "sort" | "query"> {
   userId: string;
 }
 interface GetUserTagsParams {
   userId: string;
+}
+
+// ========================================================================= 
+// Interaction Related Params
+// =========================================================================
+interface CreateInteractionParams {
+  actionId: string;
+  authorId: string;
+  actionType: "question" | "answer";
+  action:
+    | "view"
+    | "upvote"
+    | "downvote"
+    | "bookmark"
+    | "post"
+    | "edit"
+    | "delete"
+    | "search";
+}
+interface UpdateReputationParams {
+  interaction: IInteractionDoc;
+  session: mongoose.ClientSession;
+  performerId: string;
+  authorId: string;
 }
