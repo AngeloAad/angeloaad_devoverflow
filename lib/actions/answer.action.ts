@@ -14,6 +14,8 @@ import handleError from "../handlers/error";
 import { Question, Vote } from "@/database";
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
+import { createInteraction } from "./interactions.action";
+import { after } from "next/server";
 
 export const createAnswer = async (
   params: CreateAnswerParams
@@ -57,6 +59,16 @@ export const createAnswer = async (
       },
       { session }
     );
+
+    // log the interaction
+    after(async () => {
+      await createInteraction({
+        action: "post",
+        actionId: answer._id.toString(),
+        actionType: "answer",
+        authorId: userId as string,
+      });
+    });
 
     await session.commitTransaction();
 
