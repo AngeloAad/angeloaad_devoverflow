@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,38 +18,68 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { AnswerSchema } from "@/lib/validations";
-import { createAnswer } from "@/lib/actions/answer.action";
+import { createAnswer, editAnswer } from "@/lib/actions/answer.action";
 import { toast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
 import { api } from "@/lib/api";
 import DynamicEditor from "@/components/editor/DynamicEditor";
+import ROUTES from "@/constants/routes";
 
 interface AnswerFormProps {
   questionId: string;
-  questionTitle: string;
-  questionContent: string;
+  questionTitle?: string;
+  questionContent?: string;
+  answer?: Answer;
+  isEdit?: boolean;
 }
 
 const AnswerForm = ({
   questionId,
   questionTitle,
   questionContent,
+  answer,
+  isEdit = false,
 }: AnswerFormProps) => {
   const [isAnswering, startAnsweringTransition] = useTransition();
   const [isAISubmitting, setIsAISubmitting] = useState(false);
   const session = useSession();
+  const router = useRouter();
 
   const editorRef = useRef<MDXEditorMethods>(null);
 
   const form = useForm<z.infer<typeof AnswerSchema>>({
     resolver: zodResolver(AnswerSchema),
     defaultValues: {
-      content: "",
+      content: answer?.content || "",
     },
   });
 
   const handleSubmit = async (values: z.infer<typeof AnswerSchema>) => {
     startAnsweringTransition(async () => {
+      if (isEdit && answer) {
+        const result = await editAnswer({
+          answerId: answer?._id,
+          questionId,
+          ...values,
+        });
+
+        if (result.data) {
+          toast({
+            title: "Success",
+            description: "Answer updated successfully",
+          });
+
+          router.push(ROUTES.QUESTION(questionId));
+        } else {
+          toast({
+            title: `Error ${result.status}`,
+            description: result.error?.message || "Something went wrong",
+            variant: "destructive",
+          });
+        }
+
+        return;
+      }
       const result = await createAnswer({
         questionId,
         content: values.content,
@@ -84,6 +115,16 @@ const AnswerForm = ({
       return;
     }
 
+    if (!questionTitle || !questionContent) {
+      toast({
+        title: "Missing question details",
+        description:
+          "Question title and content are required for AI generation",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsAISubmitting(true);
 
     const userAnswer = editorRef.current?.getMarkdown();
@@ -115,7 +156,6 @@ const AnswerForm = ({
         title: "Success",
         description: "AI answer generated successfully",
       });
-
     } catch (error) {
       toast({
         title: "Error",

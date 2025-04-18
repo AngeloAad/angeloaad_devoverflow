@@ -5,6 +5,7 @@ import {
   CreateAnswerSchema,
   DeleteAnswerSchema,
   EditAnswerSchema,
+  GetAnswerSchema,
   GetAnswersSchema,
 } from "../validations";
 import mongoose, { FilterQuery } from "mongoose";
@@ -67,6 +68,33 @@ export const createAnswer = async (
     throw error;
   } finally {
     await session.endSession();
+  }
+};
+
+export const getAnswer = async (params: GetAnswerParams): Promise<ActionResponse<Answer>> => {
+  const validationResult = await action({
+    params,
+    schema: GetAnswerSchema,
+  })
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  
+  const { answerId } = validationResult.params!;
+
+  try {
+    const answer = await Answer.findById(answerId)
+      .populate("author", "_id name image")
+      .populate("question", "_id title");
+
+    if (!answer) {
+      throw new Error("Answer not found");
+    }
+
+    return { success: true, data: JSON.parse(JSON.stringify(answer)) };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
   }
 };
 

@@ -25,7 +25,7 @@ const EditDeleteAction = ({
     if (type === "Question") {
       router.push(`/questions/${itemId}/edit`);
     } else if (type === "Answer") {
-      await editAnswer({ answerId: itemId, content: "", questionId: "" });
+      router.push(`/answers/${itemId}/edit`);
     }
   };
 
