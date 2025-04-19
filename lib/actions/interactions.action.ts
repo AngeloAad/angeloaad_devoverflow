@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { ClientSession } from "mongoose";
 
 import { CreateInteractionSchema } from "../validations";
 import { Interaction, User } from "../../database";
@@ -43,7 +43,6 @@ export const createInteraction = async (
       { session }
     );
 
-    // TODO: Update reputation for both the performer and the content author(original author)
     await updateReputation({
       interaction,
       session,
@@ -83,16 +82,26 @@ async function updateReputation(params: UpdateReputationParams) {
       break;
     case "post":
       authorPoints = actionType === "question" ? 5 : 10;
+      performerPoints = actionType === "question" ? 2 : 5;
       break;
     case "delete":
       authorPoints = actionType === "question" ? -5 : -10;
+      performerPoints = actionType === "question" ? -2 : -5;
+      break;
+    case "bookmark":
+      performerPoints = 1;
+      authorPoints = 2;
+      break;
+    case "unbookmark":
+      performerPoints = -1;
+      authorPoints = -2;
       break;
   }
 
   if (performerId === authorId) {
     await User.findByIdAndUpdate(
       performerId,
-      { $inc: { reputation: authorPoints } },
+      { $inc: { reputation: performerPoints } },
       { session }
     );
 
@@ -117,3 +126,51 @@ async function updateReputation(params: UpdateReputationParams) {
     { session }
   );
 }
+
+export async function reverseReputationForVote(params: ReverseReputationParams) {
+    const { voteType, performerId, authorId, session } = params;
+  
+    let performerPointsToReverse = 0;
+    let authorPointsToReverse = 0;
+  
+    switch (voteType) {
+      case "upvote":
+        performerPointsToReverse = -2;
+        authorPointsToReverse = -10;
+        break;
+      case "downvote":
+        performerPointsToReverse = 1;
+        authorPointsToReverse = 2;
+        break;
+    }
+
+    if (performerId === authorId) {
+        await User.findByIdAndUpdate(
+          performerId,
+          { $inc: { reputation: performerPointsToReverse } },
+          { session }
+        );
+    
+        return;
+      }
+  
+    const bulkOps = [];
+    
+    bulkOps.push({
+      updateOne: {
+        filter: { _id: authorId },
+        update: { $inc: { reputation: authorPointsToReverse } },
+      },
+    });
+    
+    bulkOps.push({
+      updateOne: {
+        filter: { _id: performerId },
+        update: { $inc: { reputation: performerPointsToReverse } },
+      },
+    });
+  
+    if (bulkOps.length > 0) {
+      await User.bulkWrite(bulkOps, { session });
+    }
+  }

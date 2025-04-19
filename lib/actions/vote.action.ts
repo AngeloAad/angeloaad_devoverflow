@@ -11,7 +11,10 @@ import {
   GetVoteSchema,
   UpdateVoteCountSchema,
 } from "../validations";
-import { createInteraction } from "./interactions.action";
+import {
+  createInteraction,
+  reverseReputationForVote,
+} from "./interactions.action";
 import { after } from "next/server";
 
 export async function updateVoteCount(
@@ -87,12 +90,23 @@ export async function createVote(
 
     if (existingVote) {
       if (existingVote.voteType === voteType) {
+        const removedVoteType = existingVote.voteType;
         // If the user has already voted with the same voteType, remove the vote
         await Vote.findByIdAndDelete(existingVote._id).session(session);
         await updateVoteCount(
           { actionId, actionType, voteType, change: -1 },
           session
         );
+
+        // Reverse reputation changes when vote is removed
+        await reverseReputationForVote({
+          voteType: removedVoteType,
+          performerId: userId,
+          authorId: contentAuthorId,
+          session,
+        });
+        
+        // Do not create an interaction for vote removal
       } else {
         // If the user has already voted with a different voteType, update the vote
         await Vote.findByIdAndUpdate(
@@ -112,6 +126,18 @@ export async function createVote(
           { actionId, actionType, voteType, change: 1 },
           session
         );
+        
+        // For vote type change, create an interaction
+        if (contentAuthorId && (voteType === "upvote" || voteType === "downvote")) {
+          after(async () => {
+            await createInteraction({
+              action: voteType,
+              actionId: actionId,
+              actionType: actionType,
+              authorId: contentAuthorId,
+            });
+          });
+        }
       }
     } else {
       // If the user has not voted yet, create a new vote
@@ -133,17 +159,19 @@ export async function createVote(
         { actionId, actionType, voteType, change: 1 },
         session
       );
+      
+      // Create interaction for new vote
+      if (contentAuthorId && (voteType === "upvote" || voteType === "downvote")) {  
+        after(async () => {
+          await createInteraction({
+            action: voteType,
+            actionId: actionId,
+            actionType: actionType,
+            authorId: contentAuthorId,
+          });
+        });
+      }
     }
-
-    // log the interaction
-    after(async () => {
-      await createInteraction({
-        action: voteType,
-        actionId: actionId,
-        actionType: actionType,
-        authorId: userId as string,
-      });
-    });
 
     await session.commitTransaction();
     session.endSession();

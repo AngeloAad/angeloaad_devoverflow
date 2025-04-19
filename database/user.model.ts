@@ -9,7 +9,7 @@ export interface IUser {
   image?: string;
   location?: string;
   portfolio?: string;
-  reputation?: string;
+  reputation?: number;
 }
 
 // 2. Create a Schema corresponding to the document interface.
@@ -23,7 +23,7 @@ const UserSchema = new Schema<IUser>(
     image: { type: String },
     location: { type: String },
     portfolio: { type: String },
-    reputation: { type: String, default: 0 },
+    reputation: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

@@ -60,7 +60,6 @@ export const createAnswer = async (
       { session }
     );
 
-    // log the interaction
     after(async () => {
       await createInteraction({
         action: "post",
@@ -83,16 +82,18 @@ export const createAnswer = async (
   }
 };
 
-export const getAnswer = async (params: GetAnswerParams): Promise<ActionResponse<Answer>> => {
+export const getAnswer = async (
+  params: GetAnswerParams
+): Promise<ActionResponse<Answer>> => {
   const validationResult = await action({
     params,
     schema: GetAnswerSchema,
-  })
+  });
 
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
-  
+
   const { answerId } = validationResult.params!;
 
   try {
@@ -270,6 +271,15 @@ export const deleteAnswer = async (
     );
 
     await Answer.findByIdAndDelete(answerId).session(session);
+
+    after(async () => {
+      await createInteraction({
+        action: "delete",
+        actionId: answer._id.toString(),
+        actionType: "answer",
+        authorId: userId as string,
+      });
+    });
 
     await session.commitTransaction();
     session.endSession();

@@ -10,6 +10,8 @@ import {
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
 import mongoose, { PipelineStage } from "mongoose";
+import { after } from "next/server";
+import { createInteraction } from "./interactions.action";
 
 export async function toggleSaveQuestion(
   params: CollectionBaseParams
@@ -44,6 +46,15 @@ export async function toggleSaveQuestion(
 
       revalidatePath(ROUTES.QUESTION(questionId));
 
+      after(async () => {
+        await createInteraction({
+          action: "unbookmark",
+          actionId: questionId,
+          actionType: "question",
+          authorId: userId as string,
+          });
+      });
+
       return {
         success: true,
         data: {
@@ -55,6 +66,15 @@ export async function toggleSaveQuestion(
     await Collection.create({ author: userId, question: questionId });
 
     revalidatePath(ROUTES.QUESTION(questionId));
+
+    after(async () => {
+        await createInteraction({
+          action: "bookmark",
+          actionId: questionId,
+          actionType: "question",
+          authorId: userId as string,
+        });
+    });
 
     return {
       success: true,
@@ -127,7 +147,8 @@ export async function getSavedQuestions(
     mostanswered: { "question.answers": -1 },
   };
 
-  const sortCriteria = sortOptions[filter as keyof typeof sortOptions] || sortOptions.mostrecent;
+  const sortCriteria =
+    sortOptions[filter as keyof typeof sortOptions] || sortOptions.mostrecent;
 
   try {
     const pipeline: PipelineStage[] = [

@@ -96,7 +96,6 @@ export async function createQuestion(
       { session }
     );
 
-    // log the interaction
     after(async () => {
       await createInteraction({
         action: "post",
@@ -440,16 +439,33 @@ export async function deleteQuestion(params: DeleteQuestionParams) {
       );
     }
 
-    await Vote.deleteMany({ actionId: questionId, actionType: "question" }).session(session);
+    await Vote.deleteMany({
+      actionId: questionId,
+      actionType: "question",
+    }).session(session);
 
-    const answers = await Answer.find({ question: questionId }).session(session);
+    const answers = await Answer.find({ question: questionId }).session(
+      session
+    );
 
     if (answers.length > 0) {
       await Answer.deleteMany({ question: questionId }).session(session);
-      await Vote.deleteMany({ actionId: { $in: answers.map((answer) => answer._id) }, actionType: "answer" }).session(session);
+      await Vote.deleteMany({
+        actionId: { $in: answers.map((answer) => answer._id) },
+        actionType: "answer",
+      }).session(session);
     }
 
     await Question.findByIdAndDelete(questionId).session(session);
+
+    after(async () => {
+      await createInteraction({
+        action: "delete",
+        actionId: questionId,
+        actionType: "question",
+        authorId: userId as string,
+      });
+    });
 
     await session.commitTransaction();
     session.endSession();

@@ -111,6 +111,7 @@ interface CreateInteractionParams {
     | "upvote"
     | "downvote"
     | "bookmark"
+    | "unbookmark"
     | "post"
     | "edit"
     | "delete"
@@ -121,4 +122,10 @@ interface UpdateReputationParams {
   session: mongoose.ClientSession;
   performerId: string;
   authorId: string;
+}
+interface ReverseReputationParams {
+  voteType: "upvote" | "downvote";
+  performerId: string;
+  authorId: string;
+  session: mongoose.ClientSession;
 }
