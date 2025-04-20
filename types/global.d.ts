@@ -52,6 +52,16 @@ interface User {
   reputation?: number;
   createdAt: Date;
 }
+interface BadgeCounts {
+  GOLD: number;
+  SILVER: number;
+  BRONZE: number;
+}
+interface Badges {
+  GOLD: number;
+  SILVER: number;
+  BRONZE: number;
+}
 
 type ActionResponse<T = null> = {
   success: boolean;
@@ -86,8 +96,3 @@ interface IncrementViewsParams {
   questionId: string;
 }
 
-interface BadgeCounts {
-  GOLD: number;
-  SILVER: number;
-  BRONZE: number;
-}

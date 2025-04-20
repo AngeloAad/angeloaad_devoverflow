@@ -216,6 +216,9 @@ export const GetUserAnswersSchema = PaginatedSearchParamsSchema.extend({
 export const GetUserTagsSchema = z.object({
   userId: z.string().min(1, { message: "User ID is required." }),
 });
+export const GetUserStatsSchema = z.object({
+  userId: z.string().min(1, { message: "User ID is required." }),
+});
 
 // =========================================================================
 // Tag Related Schemas

@@ -98,6 +98,10 @@ interface GetUserAnswersParams
 interface GetUserTagsParams {
   userId: string;
 }
+interface GetUserStatsParams {
+  userId: string;
+}
+
 
 // ========================================================================= 
 // Interaction Related Params
