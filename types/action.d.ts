@@ -101,6 +101,12 @@ interface GetUserTagsParams {
 interface GetUserStatsParams {
   userId: string;
 }
+interface RecommendationsParams {
+  userId: string;
+  query?: string;
+  skip: number;
+  limit: number;
+}
 
 
 // ========================================================================= 

@@ -15,7 +15,13 @@ interface Props {
   fallbackClassName?: string;
 }
 
-const UserAvatar = ({ id, name, imageUrl, className = "h-9 w-9", fallbackClassName }: Props) => {
+const UserAvatar = ({
+  id,
+  name,
+  imageUrl,
+  className = "h-9 w-9",
+  fallbackClassName,
+}: Props) => {
   const initials = name
     .split(" ")
     .map((word: string) => word[0])
@@ -35,7 +41,12 @@ const UserAvatar = ({ id, name, imageUrl, className = "h-9 w-9", fallbackClassNa
             quality={100}
           />
         ) : (
-          <AvatarFallback className={cn("primary-gradient font-space-grotesk font-bold tracking-wider text-white", fallbackClassName)}>
+          <AvatarFallback
+            className={cn(
+              "primary-gradient font-space-grotesk font-bold tracking-wider text-white",
+              fallbackClassName
+            )}
+          >
             {initials}
           </AvatarFallback>
         )}

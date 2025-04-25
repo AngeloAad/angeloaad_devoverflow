@@ -6,6 +6,7 @@ import handleError from "../handlers/error";
 import {
   GetUserAnswersSchema,
   GetUserQuestionsSchema,
+  GetUserRecommendationsSchema,
   GetUserSchema,
   GetUserStatsSchema,
   GetUserTagsSchema,
@@ -81,8 +82,6 @@ export async function getUsers(
 export async function getUser(params: GetUserParams): Promise<
   ActionResponse<{
     user: User;
-    // totalQuestions: number;
-    // totalAnswers: number;
   }>
 > {
   const validationResult = await action({
@@ -100,9 +99,6 @@ export async function getUser(params: GetUserParams): Promise<
     const user = await User.findById(userId);
 
     if (!user) throw new Error("User not found");
-
-    // const totalQuestions = await Question.countDocuments({ author: userId });
-    // const totalAnswers = await Answer.countDocuments({ author: userId });
 
     return {
       success: true,

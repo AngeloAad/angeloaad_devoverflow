@@ -7,6 +7,8 @@ import Metric from "../Metric";
 import { getSavedQuestion } from "@/lib/actions/collection.action";
 import SaveButtonContainer from "../questions/SaveButtonContainer";
 import EditDeleteAction from "../user/EditDeleteAction";
+import UserAvatar from "../UserAvatar";
+
 interface Props {
   question: Question;
   showSaveButton?: boolean;
@@ -65,16 +67,20 @@ const QuestionCard = ({
       </div>
 
       <div className="flex-between mt-6 w-full flex-wrap gap-3">
-        <Metric
-          imgUrl={author.image}
-          alt={author.name}
-          value={author.name}
-          title={`• asked ${getTimeStamp(createdAt)}`}
-          href={ROUTES.PROFILE(author._id)}
-          textStyles="body-medium text-dark400_light700"
-          isAuthor
-          titleStyles="max-sm:hidden"
-        />
+        <div className="flex items-center gap-2">
+          <UserAvatar
+            id={author._id}
+            name={author.name}
+            imageUrl={author.image}
+            className="size-6 rounded-full object-cover"
+          />
+          <span className="body-medium text-dark400_light700">
+            {author.name}
+          </span>
+          <span className="body-medium text-dark400_light700 max-sm:hidden">
+            • asked {getTimeStamp(createdAt)}
+          </span>
+        </div>
 
         <div className="flex items-center gap-3 max-sm:flex-wrap max-sm:justify-start">
           <Metric
