@@ -11,9 +11,16 @@ import DataRenderer from "@/components/DataRenderer";
 import CommonFilter from "@/components/filters/CommonFilter";
 import { HomePageFilters } from "@/constants/filters";
 import Pagination from "@/components/Pagination";
+import { Metadata } from "next";
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
+
+export const metadata: Metadata = {
+  title: "DevFlow | Home",
+  description:
+    "Discover different programming questions and answers with recommendations from the community.",
+};
 
 const Home = async ({ searchParams }: SearchParams) => {
   const { page, pageSize, query, filter } = await searchParams;

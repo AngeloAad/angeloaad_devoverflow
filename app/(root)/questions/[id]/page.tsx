@@ -19,7 +19,22 @@ import SaveQuestions from "@/components/questions/SaveQuestions";
 import { getSavedQuestion } from "@/lib/actions/collection.action";
 import SaveQuestionsSkeleton from "@/components/questions/SaveQuestionsSkeleton";
 import SaveButtonContainer from "@/components/questions/SaveButtonContainer";
+import { Metadata } from "next";
 
+export async function generateMetadata({
+  params,
+}: RouteParams): Promise<Metadata> {
+  const { id } = await params;
+
+  const { success, data: question } = await getQuestion({ questionId: id });
+
+  if (!success || !question) return {};
+
+  return {
+    title: question.title,
+    description: question.content.slice(0, 100),
+  };
+}
 const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
   const { page, pageSize, filter } = await searchParams;

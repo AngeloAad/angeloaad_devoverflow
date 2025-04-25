@@ -19,6 +19,7 @@ import { Answer, Collection, Interaction, Vote } from "@/database";
 import { revalidatePath } from "next/cache";
 import { createInteraction } from "./interactions.action";
 import { after } from "next/server";
+import { cache } from "react";
 
 export async function createQuestion(
   params: CreateQuestionParams
@@ -257,43 +258,41 @@ export async function editQuestion(
   }
 }
 
-
-export async function getQuestion(
-  params: GetQuestionParams
-): Promise<ActionResponse<Question>> {
-  // Validate input and check user authorization
-  const validationResult = await action({
-    params,
-    schema: GetQuestionSchema,
-    authorize: true,
-  });
-  
-  // Return error if validation fails
-  if (validationResult instanceof Error) {
-    return handleError(validationResult) as ErrorResponse;
-  }
-  
-  // Extract validated questionId
-  const { questionId } = validationResult.params!;
-  
-  try {
-    // Fetch question with populated tags
-    const question = await Question.findById(questionId)
-    .populate("tags")
-    .populate("author", "_id name image");
+export const getQuestion = cache(
+  async (params: GetQuestionParams): Promise<ActionResponse<Question>> => {
+    // Validate input and check user authorization
+    const validationResult = await action({
+      params,
+      schema: GetQuestionSchema,
+      authorize: true,
+    });
     
-    // Check if question exists
-    if (!question) {
-      throw new Error("Question not found");
+    // Return error if validation fails
+    if (validationResult instanceof Error) {
+      return handleError(validationResult) as ErrorResponse;
     }
     
-    // Return success response with question data
-    return { success: true, data: JSON.parse(JSON.stringify(question)) };
-  } catch (error) {
-    // Handle and format any errors
+    // Extract validated questionId
+    const { questionId } = validationResult.params!;
+    
+    try {
+      // Fetch question with populated tags
+      const question = await Question.findById(questionId)
+      .populate("tags")
+      .populate("author", "_id name image");
+      
+      // Check if question exists
+      if (!question) {
+        throw new Error("Question not found");
+      }
+      
+      // Return success response with question data
+      return { success: true, data: JSON.parse(JSON.stringify(question)) };
+    } catch (error) {
+      // Handle and format any errors
     return handleError(error) as ErrorResponse;
   }
-}
+});
 
 export async function getRecommendedQuestions({
   userId,

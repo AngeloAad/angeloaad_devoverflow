@@ -7,6 +7,13 @@ import { getUsers } from "@/lib/actions/user.action";
 import CommonFilter from "@/components/filters/CommonFilter";
 import { UserFilters } from "@/constants/filters";
 import Pagination from "@/components/Pagination";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "DevFlow | Community",
+  description:
+    "Connect with developers from around the world. Explore user profiles, contributions, and expertise on the DevFlow community.",
+};
 
 const Community = async ({ searchParams }: RouteParams) => {
   const { page, pageSize, query, filter } = await searchParams;

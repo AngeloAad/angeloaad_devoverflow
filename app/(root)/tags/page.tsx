@@ -8,6 +8,14 @@ import TagCard from "@/components/cards/TagCard";
 import CommonFilter from "@/components/filters/CommonFilter";
 import { TagFilters } from "@/constants/filters";
 import Pagination from "@/components/Pagination";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "DevFlow | Tags",
+  description:
+    "Explore and discover different programming tags and topics on DevFlow. Find questions related to specific languages, frameworks, and technologies.",
+};
+
 const Tags = async ({ searchParams }: RouteParams) => {
   const { page, pageSize, query, filter } = await searchParams;
 

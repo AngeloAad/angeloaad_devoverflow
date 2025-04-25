@@ -9,10 +9,17 @@ import ROUTES from "@/constants/routes";
 import CommonFilter from "@/components/filters/CommonFilter";
 import { CollectionFilters } from "@/constants/filters";
 import Pagination from "@/components/Pagination";
+import { Metadata } from "next";
 
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
+
+export const metadata: Metadata = {
+  title: "DevFlow | Collections",
+  description:
+    "Access your saved questions and collections. Organize and revisit your favorite programming resources on DevFlow.",
+};
 
 const Collections = async ({ searchParams }: SearchParams) => {
   const { page, pageSize, query, filter } = await searchParams;
