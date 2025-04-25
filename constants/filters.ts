@@ -36,3 +36,11 @@ export const HomePageFilters = [
     { name: "Popular", value: "popular" },
     { name: "Clear", value: "clear" }
   ];
+
+  export const JobFilters = [
+    { name: "Newest", value: "newest" },
+    { name: "Oldest", value: "oldest" },
+    { name: "Popular", value: "popular" },
+    { name: "Clear", value: "clear" }
+  ];
+

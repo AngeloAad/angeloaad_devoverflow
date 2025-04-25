@@ -14,11 +14,11 @@ export const sidebarLinks = [
       route: "/collections",
       label: "Collections",
     },
-    // {
-    //   imgURL: "/icons/suitcase.svg",
-    //   route: "/jobs",
-    //   label: "Find Jobs",
-    // },
+    {
+      imgURL: "/icons/suitcase.svg",
+      route: "/find-jobs",
+      label: "Find Jobs",
+    },
     {
       imgURL: "/icons/tag.svg",
       route: "/tags",
