@@ -257,3 +257,11 @@ export const CreateInteractionSchema = z.object({
   actionId: z.string().min(1, { message: "Action ID is required." }),
   authorId: z.string().min(1, { message: "Author ID is required." }),
 });
+
+// =========================================================================
+// Global Search Related Schemas
+// =========================================================================
+export const GlobalSearchSchema = z.object({
+  query: z.string(),
+  type: z.string().nullable().optional(),
+});

@@ -147,3 +147,11 @@ interface JobFilterParams {
   query: string;
   page: number;
 }
+
+// =========================================================================
+// Global Search Related Params
+// =========================================================================
+interface GlobalSearchParams {
+  query: string;
+  type: string | null;
+}
