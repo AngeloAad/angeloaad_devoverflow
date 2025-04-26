@@ -139,3 +139,11 @@ interface ReverseReputationParams {
   authorId: string;
   session: mongoose.ClientSession;
 }
+
+// =========================================================================
+// Job Related Params
+// =========================================================================
+interface JobFilterParams {
+  query: string;
+  page: number;
+}

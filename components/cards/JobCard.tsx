@@ -1,135 +1,149 @@
+/* eslint-disable camelcase */
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
-import ROUTES from "@/constants/routes";
-import Metric from "@/components/Metric";
 
-interface JobProps {
-  _id: string;
-  title: string;
-  companyName: string;
-  companyLogo: string;
-  description: string;
-  location: string;
-  jobType: string;
-  category: string;
-  salary: string;
+import { processJobTitle } from "@/lib/utils";
+
+interface JobLocationProps {
+  job_country?: string;
+  job_city?: string;
+  job_state?: string;
 }
 
-interface JobCardProps {
-  job: JobProps;
-}
+const JobLocation = ({
+  job_country,
+  job_city,
+  job_state,
+}: JobLocationProps) => {
+  return (
+    <div className="background-light800_dark400 flex items-center justify-end gap-2 rounded-2xl px-3 py-1.5">
+      <Image
+        src={`https://flagsapi.com/${job_country}/flat/64.png`}
+        alt="country symbol"
+        width={16}
+        height={16}
+        className="rounded-full"
+      />
 
-const JobCard = ({ job }: JobCardProps) => {
+      <p className="body-medium text-dark400_light700">
+        {job_city && `${job_city}, `}
+        {job_state && `${job_state}, `}
+        {job_country && `${job_country}`}
+      </p>
+    </div>
+  );
+};
+
+const JobCard = ({ job }: { job: Job }) => {
   const {
-    _id,
-    title,
-    companyName,
-    companyLogo,
-    description,
-    location,
-    jobType,
-    category,
-    salary,
+    employer_logo,
+    employer_website,
+    job_employment_type,
+    job_title,
+    job_description,
+    job_apply_link,
+    job_city,
+    job_state,
+    job_country,
   } = job;
 
   return (
-    <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
-      <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
-        <div className="flex w-full gap-4 max-sm:flex-col">
-          <div className="flex-shrink-0 max-sm:self-center">
+    <section className="background-light900_dark200 light-border shadow-light100_darknone flex flex-col items-start gap-6 rounded-lg border p-6 sm:flex-row sm:p-8">
+      <div className="flex w-full justify-end sm:hidden">
+        <JobLocation
+          job_country={job_country}
+          job_city={job_city}
+          job_state={job_state}
+        />
+      </div>
+
+      <div className="flex items-center gap-6">
+        {employer_logo ? (
+          <Link
+            href={employer_website ?? "/jobs"}
+            className="background-light800_dark400 relative size-16 rounded-xl"
+          >
             <Image
-              src={companyLogo || "/icons/company-logo.svg"}
-              alt={companyName}
-              width={60}
-              height={60}
-              className="rounded-md object-contain"
+              src={employer_logo}
+              alt="company logo"
+              fill
+              className="size-full object-contain p-2"
+            />
+          </Link>
+        ) : (
+          <Image
+            src="/images/site-logo.svg"
+            alt="default site logo"
+            width={64}
+            height={64}
+            className="rounded-[10px]"
+          />
+        )}
+      </div>
+
+      <div className="w-full">
+        <div className="flex-between flex-wrap gap-2">
+          <p className="base-semibold text-dark200_light900">
+            {processJobTitle(job_title)}
+          </p>
+
+          <div className="hidden sm:flex">
+            <JobLocation
+              job_country={job_country}
+              job_city={job_city}
+              job_state={job_state}
             />
           </div>
+        </div>
 
-          <div className="flex flex-1 flex-col">
-            <div className="flex items-center justify-between max-sm:flex-col max-sm:items-start max-sm:gap-2 max-sm:mt-4">
-              <h3 className="sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 pr-4">
-                {title}
-              </h3>
+        <p className="body-regular text-dark500_light700  mt-2 line-clamp-2">
+          {job_description?.slice(0, 200)}
+        </p>
 
-              <div className="flex items-center justify-center gap-3 background-light800_dark400 p-1 rounded-full max-md:hidden">
-                <span className="flex items-center gap-2">
-                  <Image
-                    src="/icons/location.svg"
-                    alt="location"
-                    width={20}
-                    height={20}
-                  />
-                  <p className="body-medium text-dark400_light700 pr-1">
-                    {location}
-                  </p>
-                </span>
-              </div>
-            </div>
+        <div className="flex-between mt-8 flex-wrap gap-6">
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <Image
+                src="/icons/clock-2.svg"
+                alt="clock"
+                width={20}
+                height={20}
+              />
 
-            <div className="mt-2 flex items-center gap-3 flex-wrap py-2">
-              <div className="flex items-center justify-center gap-3 background-light800_dark400 p-1 rounded-full md:hidden">
-                <span className="flex items-center gap-2">
-                  <Image
-                    src="/icons/location.svg"
-                    alt="location"
-                    width={20}
-                    height={20}
-                  />
-                  <p className="body-medium text-dark400_light700 pr-1">
-                    {location}
-                  </p>
-                </span>
-              </div>
-
-              <span className="subtle-medium background-light800_dark400 text-light400_light500 rounded-md px-4 py-2 uppercase">
-                {category}
-              </span>
-            </div>
-
-            <div className="mt-3.5">
-              <p className="body-regular text-dark400_light700">
-                About the Company: {description}
+              <p className="body-medium text-light-500">
+                {job_employment_type}
               </p>
             </div>
 
-            <div className="mt-6 flex items-center justify-between">
-              <div className="flex items-center gap-4 flex-wrap">
-                <Metric
-                  imgUrl="/icons/clock-2.svg"
-                  alt="Job Type"
-                  value={jobType}
-                  title=""
-                  textStyles="small-medium text-light400_light500"
-                />
+            <div className="flex items-center gap-2">
+              <Image
+                src="/icons/currency-dollar-circle.svg"
+                alt="dollar symbol"
+                width={20}
+                height={20}
+              />
 
-                <Metric
-                  imgUrl="/icons/currency-dollar-circle.svg"
-                  alt="Salary"
-                  value={salary}
-                  title=""
-                  textStyles="small-medium text-light400_light500"
-                />
-              </div>
-
-              <Link
-                href={`${ROUTES.JOBS}?id=${_id}`}
-                className="flex items-center gap-2 ml-auto"
-              >
-                <p className="body-semibold primary-text-gradient">View job</p>
-                <Image
-                  src="/icons/arrow-up-right.svg"
-                  alt="arrow right"
-                  width={20}
-                  height={20}
-                />
-              </Link>
+              <p className="body-medium text-light-500">Not disclosed</p>
             </div>
           </div>
+
+          <Link
+            href={job_apply_link ?? "/jobs"}
+            target="_blank"
+            className="flex items-center gap-2"
+          >
+            <p className="body-semibold primary-text-gradient">View job</p>
+
+            <Image
+              src="/icons/arrow-up-right.svg"
+              alt="arrow up right"
+              width={20}
+              height={20}
+            />
+          </Link>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

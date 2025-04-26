@@ -1,97 +1,52 @@
-import React from "react";
-import { Metadata } from "next";
-import Pagination from "@/components/Pagination";
-import DataRenderer from "@/components/DataRenderer";
-import CommonFilter from "@/components/filters/CommonFilter";
-import LocalSearch from "@/components/search/LocalSearch";
-import ROUTES from "@/constants/routes";
-import { JobFilters } from "@/constants/filters";
 import JobCard from "@/components/cards/JobCard";
+import JobsFilter from "@/components/filters/JobFilter";
+import Pagination from "@/components/Pagination";
+import {
+  fetchCountries,
+  fetchJobs,
+  fetchLocation,
+} from "@/lib/actions/job.action";
 
-export const metadata: Metadata = {
-  title: "DevFlow | Find Jobs",
-  description:
-    "Find programming and development job opportunities. Browse job listings for developers, engineers, and tech professionals.",
-};
+const Page = async ({ searchParams }: RouteParams) => {
+  const { query, location, page } = await searchParams;
+  const userLocation = await fetchLocation();
 
-// Sample jobs data for demonstration
-const SAMPLE_JOBS = [
-  {
-    _id: "1",
-    title: "Principal Salesforce Developer",
-    companyName: "AT&T",
-    companyLogo: "/images/site-logo.svg",
-    description:
-      "Join AT&T and reimagine the communications and technologies that connect the world.",
-    location: "Melbourne, AU",
-    jobType: "Full-time",
-    category: "DEVELOPMENT",
-    salary: "80k - 100k",
-  },
-  {
-    _id: "2",
-    title: "Senior React Developer",
-    companyName: "Microsoft",
-    companyLogo: "/images/companies/microsoft.png",
-    description:
-      "Join our team building the next generation of web applications.",
-    location: "Seattle, WA",
-    jobType: "Full-time",
-    category: "DEVELOPMENT",
-    salary: "120k - 150k",
-  },
-  {
-    _id: "3",
-    title: "DevOps Engineer",
-    companyName: "Google",
-    companyLogo: "/images/companies/google.png",
-    description: "Help us build and maintain our cloud infrastructure.",
-    location: "San Francisco, CA",
-    jobType: "Full-time",
-    category: "INFRASTRUCTURE",
-    salary: "130k - 160k",
-  },
-];
+  const jobs = await fetchJobs({
+    query: `${query}, ${location}` || `Software Engineer in ${userLocation}`,
+    page: Number(page ?? 1),
+  });
 
-const FindJobs = async ({ searchParams }: RouteParams) => {
-  const { page, pageSize, query, filter } = (await searchParams) || {};
+  const countries = await fetchCountries();
+  const parsedPage = parseInt(page ?? 1);
 
-  // For now, we're using sample data
-  // In a real implementation, you would fetch jobs from an API
-  const jobs = SAMPLE_JOBS;
-  const isNext = false;
+  console.log(jobs);
 
   return (
     <>
-      <h1 className="h1-bold text-dark100_light900">Find Jobs</h1>
-      <section className="mt-11 mb-12 flex justify-between gap-5 max-sm:flex-col sm:items-center">
-        <LocalSearch
-          route={ROUTES.JOBS}
-          imgSrc="/icons/search.svg"
-          placeholder="Search jobs..."
-          otherClasses="flex-1"
-        />
+      <h1 className="h1-bold text-dark100_light900">Jobs</h1>
 
-        <CommonFilter
-          filters={JobFilters}
-          otherClasses="min-h-[56px] sm:min-w-[170px]"
-          containerClasses="hidden max-md:flex"
-        />
-      </section>
-
-      <div className="flex flex-col gap-6 mt-10">
-        {jobs.map((job) => (
-          <JobCard key={job._id} job={job} />
-        ))}
+      <div className="flex">
+        <JobsFilter countriesList={countries} />
       </div>
 
-      <Pagination
-        page={Number(page) || 1}
-        isNext={isNext}
-        containerClasses="mt-10"
-      />
+      <section className="light-border mb-9 mt-11 flex flex-col gap-9 border-b pb-9">
+        {jobs?.length > 0 ? (
+          jobs
+            ?.filter((job: Job) => job.job_title)
+            .map((job: Job) => <JobCard key={job.id} job={job} />)
+        ) : (
+          <div className="paragraph-regular text-dark200_light800 w-full text-center">
+            Oops! We couldn&apos;t find any jobs at the moment. Please try again
+            later
+          </div>
+        )}
+      </section>
+
+      {jobs?.length > 0 && (
+        <Pagination page={parsedPage} isNext={jobs?.length === 10} />
+      )}
     </>
   );
 };
 
-export default FindJobs;
+export default Page;
