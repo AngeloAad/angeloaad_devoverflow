@@ -9,17 +9,26 @@ import {
 
 const Page = async ({ searchParams }: RouteParams) => {
   const { query, location, page } = await searchParams;
-  const userLocation = await fetchLocation();
+  const pageNum = Number(page ?? 1);
 
-  const jobs = await fetchJobs({
-    query: `${query}, ${location}` || `Software Engineer in ${userLocation}`,
-    page: Number(page ?? 1),
-  });
+  const locationPromise = fetchLocation();
+  const countriesPromise = fetchCountries();
 
-  const countries = await fetchCountries();
+  let searchQuery: string;
+  if (query && location) {
+    searchQuery = `${query}, ${location}`;
+  } else {
+    const userLocation = await locationPromise;
+    searchQuery = `Software Engineer in ${userLocation}`;
+  }
+
+  const jobsPromise = fetchJobs({ query: searchQuery, page: pageNum });
+
+  const [countries, jobs] = await Promise.all([countriesPromise, jobsPromise]);
+
   const parsedPage = parseInt(page ?? 1);
 
-  console.log(jobs);
+  // console.log(jobs);
 
   return (
     <>
