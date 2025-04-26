@@ -11,6 +11,7 @@ import {
   GetUserStatsSchema,
   GetUserTagsSchema,
   PaginatedSearchParamsSchema,
+  UpdateUserSchema,
 } from "../validations";
 import { User, Question, Answer, Tag } from "@/database";
 import mongoose, { PipelineStage } from "mongoose";
@@ -103,6 +104,37 @@ export async function getUser(params: GetUserParams): Promise<
     return {
       success: true,
       data: { user: JSON.parse(JSON.stringify(user)) },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateUser(params: UpdateUserParams): Promise<
+  ActionResponse<{
+    user: User;
+  }>
+> {
+  const validationResult = await action({
+    params,
+    schema: UpdateUserSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { user } = validationResult.session!;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(user?.id, params, {
+      new: true,
+    });
+
+    return {
+      success: true,
+      data: { user: JSON.parse(JSON.stringify(updatedUser)) },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

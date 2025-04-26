@@ -53,7 +53,7 @@ const eslintConfig = [
     "next/typescript",
     "eslint:recommended",
     "standard",
-    "plugin:tailwindcss/recommended",
+    // "plugin:tailwindcss/recommended",
     "prettier"
   ),
   ...compat.plugins("import", "promise", "n"),
