@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { InteractionActionEnums } from "@/database/interaction.model";
 // =========================================================================
 // Search/Pagination Related Schemas (Define first as others depend on it)
 // =========================================================================
@@ -267,9 +266,21 @@ export const CreateInteractionSchema = z.object({
   actionType: z.enum(["question", "answer"], {
     message: "Invalid action type.",
   }),
-  action: z.enum(InteractionActionEnums, {
-    message: "Invalid action.",
-  }),
+  action: z.enum(
+    [
+      "view",
+      "upvote",
+      "downvote",
+      "bookmark",
+      "post",
+      "edit",
+      "delete",
+      "search",
+    ],
+    {
+      message: "Invalid action.",
+    }
+  ),
   actionId: z.string().min(1, { message: "Action ID is required." }),
   authorId: z.string().min(1, { message: "Author ID is required." }),
 });

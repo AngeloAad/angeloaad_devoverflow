@@ -44,6 +44,7 @@ const compat = new FlatCompat({
         },
       },
     ],
+    "ignorePatterns": ["components/ui/**"],
   },
 });
 
