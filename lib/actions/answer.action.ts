@@ -99,7 +99,7 @@ export const getAnswer = async (
   try {
     const answer = await Answer.findById(answerId)
       .populate("author", "_id name image")
-      .populate("question", "_id title");
+      .populate("question", "_id title content");
 
     if (!answer) {
       throw new Error("Answer not found");
