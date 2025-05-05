@@ -1,16 +1,16 @@
-import HomeFilter from '@/components/filters/HomeFilter';
-import DataRenderer from '@/components/DataRenderer';
-import QuestionCard from '@/components/cards/QuestionCard';
-import { EMPTY_QUESTION } from '@/constants/states';
-import { getTagQuestions } from '@/lib/actions/tag.action';
-import React from 'react'
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import ROUTES from '@/constants/routes';
-import LocalSearch from '@/components/search/LocalSearch';
-import CommonFilter from '@/components/filters/CommonFilter';
-import { TagFilters } from '@/constants/filters';
-import Pagination from '@/components/Pagination';
+import HomeFilter from "@/components/filters/HomeFilter";
+import DataRenderer from "@/components/DataRenderer";
+import QuestionCard from "@/components/cards/QuestionCard";
+import { EMPTY_QUESTION } from "@/constants/states";
+import { getTagQuestions } from "@/lib/actions/tag.action";
+import React from "react";
+import ROUTES from "@/constants/routes";
+import LocalSearch from "@/components/search/LocalSearch";
+import CommonFilter from "@/components/filters/CommonFilter";
+import { TagFilters } from "@/constants/filters";
+import Pagination from "@/components/Pagination";
+import type { Metadata } from "next";
+
 const page = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
   const { page, pageSize, query } = await searchParams;
@@ -23,7 +23,7 @@ const page = async ({ params, searchParams }: RouteParams) => {
   });
 
   const { tag, questions, isNext } = data || {};
-  
+
   return (
     <>
       <section className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
@@ -49,13 +49,16 @@ const page = async ({ params, searchParams }: RouteParams) => {
         error={error}
         data={questions}
         empty={EMPTY_QUESTION}
-        render={(questions) => (
+        render={(questions) =>
           questions.map((question) => (
-            <div key={question._id} className="mt-10 flex w-full flex-col gap-6">
+            <div
+              key={question._id}
+              className="mt-10 flex w-full flex-col gap-6"
+            >
               <QuestionCard question={question} />
             </div>
           ))
-        )}
+        }
       />
 
       <Pagination
@@ -68,3 +71,41 @@ const page = async ({ params, searchParams }: RouteParams) => {
 };
 
 export default page;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const { data } = await getTagQuestions({ tagId: params.id });
+
+  if (!data?.tag) {
+    return {
+      title: "Tag Not Found",
+    };
+  }
+
+  const { tag, questions } = data;
+
+  return {
+    title: `${tag.name} Questions`,
+    description: `Find answers to ${tag.name} programming questions. Browse ${questions.length}+ questions or ask your own.`,
+    keywords: [
+      `${tag.name}`,
+      "programming",
+      "coding",
+      "development",
+      `${tag.name} questions`,
+    ],
+    openGraph: {
+      title: `${tag.name} Questions | DevOverflow`,
+      description: `Find answers to ${tag.name} programming questions. Browse ${questions.length}+ questions or ask your own.`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: `${tag.name} Questions | DevOverflow`,
+      description: `Find answers to ${tag.name} programming questions. Browse ${questions.length}+ questions or ask your own.`,
+    },
+  };
+}

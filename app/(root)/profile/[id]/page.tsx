@@ -15,11 +15,16 @@ import ProfileLink from "@/components/user/ProfileLink";
 import Stats from "@/components/user/Stats";
 import { TabsList, Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import DataRenderer from "@/components/DataRenderer";
-import { EMPTY_QUESTION, EMPTY_ANSWER, EMPTY_TAGS, EMPTY_TAG } from "@/constants/states";
+import {
+  EMPTY_QUESTION,
+  EMPTY_ANSWER,
+  EMPTY_TAG,
+} from "@/constants/states";
 import QuestionCard from "@/components/cards/QuestionCard";
 import Pagination from "@/components/Pagination";
 import AnswerCard from "@/components/cards/AnswerCard";
 import TagCard from "@/components/cards/TagCard";
+import type { Metadata } from "next";
 
 const Profile = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
@@ -70,16 +75,8 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
     userId: id,
   });
 
-  const {
-    _id,
-    name,
-    username,
-    bio,
-    image,
-    location,
-    portfolio,
-    createdAt,
-  } = user;
+  const { _id, name, username, bio, image, location, portfolio, createdAt } =
+    user;
 
   const { questions, isNext: hasMoreQuestions } = UserQuestionsData!;
   const { answers, isNext: hasMoreAnswers } = UserAnswersData!;
@@ -161,11 +158,13 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
       <Stats
         totalQuestions={userStats?.questions || 0}
         totalAnswers={userStats?.answers || 0}
-        badges={userStats?.badges || {
-          GOLD: 0,
-          SILVER: 0,
-          BRONZE: 0,
-        }}
+        badges={
+          userStats?.badges || {
+            GOLD: 0,
+            SILVER: 0,
+            BRONZE: 0,
+          }
+        }
         reputationPoints={userStats?.reputation || 0}
       />
 
@@ -280,3 +279,53 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
 };
 
 export default Profile;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const { data: userData } = await getUser({ userId: params.id });
+
+  if (!userData?.user) {
+    return {
+      title: "Profile Not Found",
+    };
+  }
+
+  const { user } = userData;
+
+  return {
+    title: `${user.name}'s Profile`,
+    description: `View ${
+      user.name
+    }'s contributions, questions, and answers on DevOverflow. ${
+      user.bio || ""
+    }`,
+    openGraph: {
+      title: `${user.name}'s Profile | DevOverflow`,
+      description: `View ${
+        user.name
+      }'s contributions, questions, and answers on DevOverflow. ${
+        user.bio || ""
+      }`,
+      images: [
+        {
+          url: user.image || "/default-avatar.png",
+          width: 400,
+          height: 400,
+          alt: user.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary",
+      title: `${user.name}'s Profile | DevOverflow`,
+      description: `View ${
+        user.name
+      }'s contributions, questions, and answers on DevOverflow. ${
+        user.bio || ""
+      }`,
+    },
+  };
+}

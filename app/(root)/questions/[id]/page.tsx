@@ -15,26 +15,49 @@ import AllAnswers from "@/components/answers/AllAnswers";
 import Votes from "@/components/votes/Votes";
 import VotesSkeleton from "@/components/votes/VotesSkeleton";
 import { getVote } from "@/lib/actions/vote.action";
-import SaveQuestions from "@/components/questions/SaveQuestions";
+// import SaveQuestions from "@/components/questions/SaveQuestions";
 import { getSavedQuestion } from "@/lib/actions/collection.action";
-import SaveQuestionsSkeleton from "@/components/questions/SaveQuestionsSkeleton";
+// import SaveQuestionsSkeleton from "@/components/questions/SaveQuestionsSkeleton";
 import SaveButtonContainer from "@/components/questions/SaveButtonContainer";
 import { Metadata } from "next";
 
 export async function generateMetadata({
   params,
-}: RouteParams): Promise<Metadata> {
-  const { id } = await params;
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const { data: question } = await getQuestion({ questionId: params.id });
 
-  const { success, data: question } = await getQuestion({ questionId: id });
+  if (!question) {
+    return {
+      title: "Question Not Found",
+    };
+  }
 
-  if (!success || !question) return {};
+  const { title, content, author, tags } = question;
 
   return {
-    title: question.title,
-    description: question.content.slice(0, 100),
+    title: title,
+    description: content.slice(0, 100), // First 160 characters for SEO
+    keywords: tags.map((tag: any) => tag.name).join(", "),
+    authors: [{ name: author.name }],
+    openGraph: {
+      title: title,
+      description: content.slice(0, 160),
+      type: "article",
+      authors: author.name,
+      publishedTime: question.createdAt.toISOString(),
+      modifiedTime: question.createdAt.toISOString(),
+      tags: tags.map((tag: any) => tag.name),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: title,
+      description: content.slice(0, 160),
+    },
   };
 }
+
 const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
   const { page, pageSize, filter } = await searchParams;

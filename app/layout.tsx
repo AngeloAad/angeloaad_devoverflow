@@ -21,11 +21,72 @@ const spaceGrotesk = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "DevFlow",
+  metadataBase: new URL("https://angeloaad-devoverflow.vercel.app/"),
+  title: {
+    template: "%s | DevOverflow",
+    default: "DevOverflow - Developer Q&A Community",
+  },
   description:
-    "A community-driven platform for asking and answering programming questions. Get help, share knowledge, and collaborate with developers from around the world. Explore topics in web development, mobile app development, algorithms, data structures, and more.",
+    "A community-driven platform for developers to ask questions, share knowledge, and learn from each other.",
+  keywords: [
+    "programming",
+    "coding",
+    "web development",
+    "software engineering",
+    "developer community",
+    "Q&A",
+  ],
+  authors: [{ name: "DevOverflow Team" }],
+  creator: "DevOverflow Team",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    siteName: "DevOverflow",
+    title: {
+      template: "%s | DevOverflow",
+      default: "DevOverflow - Developer Q&A Community",
+    },
+    description:
+      "A community-driven platform for developers to ask questions, share knowledge, and learn from each other.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: {
+      template: "%s | DevOverflow",
+      default: "DevOverflow - Developer Q&A Community",
+    },
+    description:
+      "A community-driven platform for developers to ask questions, share knowledge, and learn from each other.",
+    creator: "@devoverflow",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
-    icon: "/images/site-logo.svg",
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+  verification: {
+    google: "your-google-verification-code",
+  },
+  alternates: {
+    canonical: "/",
+    languages: {
+      "en-US": "/en-US",
+    },
   },
 };
 

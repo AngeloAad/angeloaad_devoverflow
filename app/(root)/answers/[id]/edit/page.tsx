@@ -18,6 +18,7 @@ import SaveButtonContainer from "@/components/questions/SaveButtonContainer";
 import Metric from "@/components/Metric";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import TagCard from "@/components/cards/TagCard";
+import type { Metadata } from "next";
 
 const EditAnswer = async ({ params }: RouteParams) => {
   const { id } = await params;
@@ -141,3 +142,26 @@ const EditAnswer = async ({ params }: RouteParams) => {
 };
 
 export default EditAnswer;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const { data: answer } = await getAnswer({ answerId: params.id });
+
+  if (!answer) {
+    return {
+      title: "Answer Not Found",
+    };
+  }
+
+  return {
+    title: `Edit Answer - ${answer.question.title}`,
+    description: `Edit your answer to the question: ${answer.question.title}`,
+    robots: {
+      index: false, // Don't index edit pages
+      follow: true,
+    },
+  };
+}
