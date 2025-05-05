@@ -47,7 +47,7 @@ const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
   });
 
   if (!success || !question) {
-    return redirect("/404");
+    return redirect(ROUTES.SIGN_IN);
   }
 
   const {

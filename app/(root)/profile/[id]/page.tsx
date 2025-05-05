@@ -15,7 +15,7 @@ import ProfileLink from "@/components/user/ProfileLink";
 import Stats from "@/components/user/Stats";
 import { TabsList, Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import DataRenderer from "@/components/DataRenderer";
-import { EMPTY_QUESTION, EMPTY_ANSWER, EMPTY_TAGS } from "@/constants/states";
+import { EMPTY_QUESTION, EMPTY_ANSWER, EMPTY_TAGS, EMPTY_TAG } from "@/constants/states";
 import QuestionCard from "@/components/cards/QuestionCard";
 import Pagination from "@/components/Pagination";
 import AnswerCard from "@/components/cards/AnswerCard";
@@ -254,7 +254,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
               success={UserTagsSuccess}
               error={UserTagsError}
               data={tags}
-              empty={EMPTY_TAGS}
+              empty={EMPTY_TAG}
               render={(tags) =>
                 tags.map((tag) => (
                   <div
