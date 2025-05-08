@@ -18,15 +18,15 @@ const getCachedJobs = unstable_cache(
 );
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     query?: string;
     location?: string;
     page?: string;
-  };
+  }>;
 }
 
 const Page = async ({ searchParams }: PageProps) => {
-  const { query, location, page } = searchParams;
+  const { query, location, page } = await searchParams;
   const pageNum = Number(page ?? 1);
 
   try {
