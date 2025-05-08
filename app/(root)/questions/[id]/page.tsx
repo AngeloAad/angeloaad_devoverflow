@@ -46,8 +46,12 @@ export async function generateMetadata({
       description: content.slice(0, 160),
       type: "article",
       authors: author.name,
-      publishedTime: question.createdAt.toISOString(),
-      modifiedTime: question.createdAt.toISOString(),
+      publishedTime: question.createdAt
+        ? new Date(question.createdAt).toISOString()
+        : undefined,
+      modifiedTime: question.createdAt
+        ? new Date(question.createdAt).toISOString()
+        : undefined,
       tags: tags.map((tag: any) => tag.name),
     },
     twitter: {
